@@ -1,0 +1,2277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<objetivo charset="UTF-8">
+<objetivo name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 Método Marantan</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f0f0f0;
+  --surface: #ffffff;
+  --surface2: #f5f5f5;
+  --border: #d0d0d0;
+  --accent: #0078d4;
+  --accent2: #e74c3c;
+  --accent3: #5c2d91;
+  --gold: #c7760a;
+  --red: #c42b1c;
+  --text: #1a1a1a;
+  --muted: #6e6e6e;
+  --win-bg: rgba(0,120,212,0.07);
+  --loss-bg: rgba(196,43,28,0.07);
+  --inv-bg: rgba(199,118,10,0.10);
+}
+
+/* ── MODO ESCURO ── */
+body.dark-mode {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --border: #2e3347;
+  --accent: #3b9eff;
+  --accent2: #e74c3c;
+  --accent3: #9b72ff;
+  --gold: #f0a832;
+  --red: #ff5252;
+  --text: #e8eaf0;
+  --muted: #7a8099;
+  --win-bg: rgba(59,158,255,0.10);
+  --loss-bg: rgba(255,82,82,0.10);
+  --inv-bg: rgba(240,168,50,0.12);
+}
+body.dark-mode header { background: #0d1b2e; }
+body.dark-mode .login-box { background: var(--surface); border-color: var(--border); }
+body.dark-mode #loginScreen { background: var(--bg); }
+body.dark-mode .tab.active { background: var(--surface); }
+body.dark-mode .tabs { background: #0a0d14; border-color: var(--border); }
+body.dark-mode .kpi,
+body.dark-mode .objetivo-bar-wrap,
+body.dark-mode .table-wrap,
+body.dark-mode .prog-table-wrap,
+body.dark-mode .rodada-box,
+body.dark-mode .hist-rodada-card,
+body.dark-mode .config-item { background: var(--surface); border-color: var(--border); }
+body.dark-mode .hist-rodada-header:hover { background: var(--surface2); }
+body.dark-mode .seq-card { background: var(--surface2); border-color: var(--border); }
+body.dark-mode .seq-card-operação { background: #1e2d45; border-color: #2a4060; color: #7ab8f5; }
+body.dark-mode select, body.dark-mode .seq-card-sel { background: var(--surface2); color: var(--text); border-color: var(--border); }
+body.dark-mode .config-input { background: var(--surface2); color: var(--text); border-color: var(--border); }
+body.dark-mode .pill-nuc { background: #1e2d45; border-color: #2a4060; }
+body.dark-mode .pill-saldo { background: var(--surface2); }
+body.dark-mode .hist-seq-mini { background: var(--surface2); }
+
+/* ── DARK MODE TOGGLE ── */
+.dark-toggle {
+  background: rgba(255,255,255,0.18); border: none;
+  color: #fff; border-radius: 20px; padding: 6px 12px;
+  font-size: 13px; cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.dark-toggle:hover { background: rgba(255,255,255,0.28); }
+
+/* ── MODAL UNIVERSAL ── */
+.modal-overlay {
+  position:fixed; inset:0; z-index:2000;
+  background:rgba(0,0,0,0.45); backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px; opacity:0; pointer-events:none;
+  transition:opacity 0.25s;
+}
+.modal-overlay.open { opacity:1; pointer-events:all; }
+.modal-box {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:18px; padding:32px 36px; width:100%; max-width:560px;
+  box-shadow:0 24px 64px rgba(0,0,0,0.25); position:relative;
+  transform:translateY(24px); transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  max-height:88vh; overflow-y:auto;
+}
+.modal-overlay.open .modal-box { transform:translateY(0); }
+.modal-title {
+  font-family:'Syne',sans-serif; font-size:18px; font-weight:800;
+  color:var(--text); margin-bottom:6px;
+}
+.modal-sub { font-size:13px; color:var(--muted); margin-bottom:22px; }
+.modal-close {
+  position:absolute; top:16px; right:20px;
+  background:none; border:none; font-size:22px;
+  color:var(--muted); cursor:pointer; line-height:1;
+}
+.modal-close:hover { color:var(--red); }
+.modal-section { margin-bottom:16px; }
+.modal-section-title {
+  font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:1px; color:var(--muted); margin-bottom:8px;
+}
+.modal-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 14px; background:var(--surface2); border-radius:8px;
+  margin-bottom:6px; font-size:13px;
+}
+.modal-row strong { font-family:'DM Mono',monospace; font-size:14px; }
+.modal-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+.btn-modal {
+  flex:1; padding:12px; border-radius:10px; border:none;
+  font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+  cursor:pointer; transition:all 0.2s; min-width:120px; text-align:center;
+}
+.btn-modal.primary   { background:var(--accent); color:#fff; }
+.btn-modal.primary:hover { background:#106ebe; }
+.btn-modal.secondary { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+.btn-modal.secondary:hover { border-color:var(--accent); color:var(--accent); }
+.btn-modal.success   { background:#27ae60; color:#fff; }
+.btn-modal.success:hover { background:#1e8449; }
+.btn-modal.danger    { background:rgba(196,43,28,0.1); color:var(--red); border:1px solid var(--red); }
+.btn-modal.danger:hover { background:var(--red); color:#fff; }
+
+/* ── BANNER ALERTA ── */
+.alert-banner {
+  position:fixed; top:72px; left:50%; transform:translateX(-50%) translateY(-20px);
+  z-index:1500; min-width:320px; max-width:90vw;
+  padding:16px 28px; border-radius:14px;
+  font-family:'Syne',sans-serif; font-size:15px; font-weight:700;
+  text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.2);
+  opacity:0; pointer-events:none;
+  transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.alert-banner.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.alert-banner.objetivo  { background:#27ae60; color:#fff; }
+.alert-banner.inv   { background:#c7760a; color:#fff; }
+.alert-banner.stop  { background:#c42b1c; color:#fff; }
+
+/* ── RESUMO DO DIA ── */
+.resumo-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px; }
+.resumo-kpi { background:var(--surface2); border-radius:10px; padding:14px; text-align:center; }
+.resumo-kpi-label { font-size:11px; color:var(--muted); margin-bottom:4px; }
+.resumo-kpi-val { font-family:'DM Mono',monospace; font-size:18px; font-weight:700; color:var(--accent); }
+
+/* ── BACKUP ── */
+.backup-area {
+  width:100%; font-family:'DM Mono',monospace; font-size:11px;
+  background:var(--surface2); border:1px solid var(--border);
+  border-radius:8px; padding:10px; resize:vertical; min-height:70px;
+  color:var(--muted); outline:none;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND ── */
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(0,120,212,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(92,45,145,0.03) 0%, transparent 60%);
+  pointer-events:none;
+}
+
+/* ── LOGIN ── */
+#loginScreen {
+  position:fixed; inset:0; z-index:1000;
+  display:flex; align-items:center; justify-content:center;
+  background: #f0f0f0;
+}
+#loginScreen::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse 100% 80% at 50% 50%, rgba(0,120,212,0.06) 0%, transparent 70%);
+}
+.login-box {
+  position:relative; z-index:1;
+  background: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-radius: 12px;
+  padding: 48px 52px;
+  width: 420px;
+  max-width: 95vw;
+  text-align: center;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08);
+  animation: loginIn 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes loginIn {
+  from { opacity:0; transform:translateY(32px) scale(0.96); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.login-icon {
+  font-size: 52px; margin-bottom: 8px;
+  filter: drop-shadow(0 4px 8px rgba(0,120,212,0.2));
+}
+.login-box h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+.login-box p { font-size: 13px; color: #6e6e6e; margin-bottom: 32px; }
+.login-input {
+  width: 100%; padding: 14px 18px;
+  background: #f5f5f5;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 6px;
+  color: #1a1a1a;
+  font-family: 'DM Mono', monospace;
+  font-size: 16px; letter-spacing: 4px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  margin-bottom: 16px;
+}
+.login-input:focus {
+  border-color: #0078d4;
+  box-shadow: 0 0 0 3px rgba(0,120,212,0.15);
+}
+.login-btn {
+  width: 100%; padding: 14px;
+  background: #0078d4;
+  color: #ffffff;
+  border: none; border-radius: 6px;
+  font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.login-btn:hover { background: #106ebe; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,120,212,0.3); }
+.login-btn:active { transform: translateY(0); background: #005a9e; }
+.login-error {
+  color: var(--red); font-size: 13px;
+  margin-top: 12px; min-height: 20px;
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-5px)}
+  80%{transform:translateX(5px)}
+}
+
+/* ── MAIN APP ── */
+#app { display:none; position:relative; z-index:1; }
+
+/* ── HEADER ── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 32px;
+  border-bottom: 1px solid var(--border);
+  background: #0078d4;
+  position: sticky; top:0; z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px; font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+.logo span { color: #cce4f7; }
+.header-objetivo {
+  display: flex; align-items: center; gap: 20px;
+  font-size: 13px; color: #cce4f7;
+}
+.header-capital {
+  font-family: 'DM Mono', monospace;
+  color: #ffffff;
+  font-size: 15px; font-weight: 600;
+}
+.logout-btn {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  color: #ffffff; padding: 6px 14px; border-radius: 4px;
+  font-size: 12px; cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.logout-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ── TABS ── */
+.tabs {
+  display: flex; gap: 2px;
+  padding: 8px 32px 0;
+  border-bottom: 1px solid #c0c0c0;
+  background: #e8e8e8;
+}
+.tab {
+  padding: 8px 18px; border-radius: 4px 4px 0 0;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 1px solid transparent;
+  transition: all 0.15s; color: #5a5a5a;
+  border-bottom: none;
+}
+.tab:hover { color: #1a1a1a; background: rgba(255,255,255,0.6); }
+.tab.active {
+  background: #f0f0f0; color: #0078d4;
+  border-color: #c0c0c0;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: -1px;
+}
+
+/* ── CONTENT ── */
+.content { padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── KPI CARDS ── */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px; margin-bottom: 28px;
+}
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px 22px;
+  transition: border-color 0.2s;
+  position: relative; overflow: hidden;
+}
+.kpi::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background: var(--kpi-color, var(--accent));
+}
+.kpi:hover { border-color: var(--kpi-color, var(--accent)); }
+.kpi-label { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+.kpi-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 24px; font-weight: 500;
+  color: var(--kpi-color, var(--accent));
+}
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* ── SECTION TITLES ── */
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--muted); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::after {
+  content:''; flex:1; height:1px; background: var(--border);
+}
+
+/* ── CONFIG FORM ── */
+.config-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px; margin-bottom: 24px;
+}
+@media(max-width:640px){.config-grid{grid-template-columns:1fr;}}
+.config-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 18px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.config-label { font-size: 13px; color: var(--text); font-weight: 500; }
+.config-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.config-input {
+  background: var(--surface2); border: 1.5px solid var(--border);
+  color: var(--text); border-radius: 8px; padding: 8px 12px;
+  font-family: 'DM Mono', monospace; font-size: 15px;
+  text-align: right; width: 130px; outline: none;
+  transition: border-color 0.2s;
+}
+.config-input:focus { border-color: var(--accent); }
+.save-btn {
+  background: var(--accent); color: #0a0a0f;
+  border: none; padding: 12px 28px; border-radius: 10px;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.save-btn:hover { background: #00ffb3; transform: translateY(-1px); }
+
+/* ── REGISTRO TABLE ── */
+.table-wrap { overflow-x: auto; border-radius: 16px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; }
+thead tr {
+  background: var(--surface2);
+}
+th {
+  padding: 12px 14px;
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted); text-align: center;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 11px 14px; font-size: 13px; text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr.row-pos  { background: var(--win-bg); }
+tr.row-neg { background: var(--loss-bg); }
+tr.row-inv  { background: var(--inv-bg); }
+tr.row-objetivo { background: rgba(0,229,160,0.12); }
+
+.badge {
+  display:inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; font-family: 'DM Mono', monospace;
+}
+.badge-p { background: rgba(0,229,160,0.15); color: var(--accent); }
+.badge-n { background: rgba(255,71,87,0.15); color: var(--red); }
+.badge-inv { background: rgba(255,209,102,0.15); color: var(--gold); }
+
+select, .sel {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 7px; padding: 5px 8px;
+  font-size: 12px; outline: none; cursor: pointer;
+  transition: border-color 0.2s;
+}
+select:focus { border-color: var(--accent); }
+.sel-retorno { min-width: 120px; }
+.sel-nado { min-width: 110px; }
+
+.action-text { font-size: 11px; white-space: nowrap; }
+.action-objetivo { color: var(--accent); font-weight: 700; }
+.action-inv  { color: var(--gold); font-weight: 700; }
+.action-loss { color: var(--accent2); }
+.action-win  { color: var(--accent); }
+.action-return { color: #74b9ff; }
+
+.mono { font-family: 'DM Mono', monospace; font-size: 13px; }
+.text-accent { color: var(--accent); }
+.text-red    { color: var(--red); }
+.text-gold   { color: var(--gold); }
+.text-blue   { color: #74b9ff; }
+.text-muted  { color: var(--muted); }
+
+/* NEXT OPERAÇÃO highlight */
+.next-operação {
+  font-family: 'DM Mono', monospace;
+  font-weight: 700; font-size: 14px;
+  color: #74b9ff;
+}
+
+/* ── ADD GAME BTN ── */
+.action-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; gap: 12px; flex-wrap: wrap;
+}
+.add-btn {
+  background: var(--accent); color: #0a0a0f;
+  border: none; padding: 10px 22px; border-radius: 10px;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; display:flex; align-items:center; gap:6px;
+}
+.add-btn:hover { background: #00ffb3; transform: translateY(-1px); }
+.reset-btn {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); padding: 10px 18px; border-radius: 10px;
+  font-size: 13px; cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* ── PROGRESS BAR OBJETIVO ── */
+.objetivo-bar-wrap {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px 24px; margin-bottom: 24px;
+}
+.objetivo-bar-label {
+  display:flex; justify-content:space-between; align-items:center;
+  font-size: 12px; color: var(--muted); margin-bottom: 10px;
+}
+.objetivo-bar-label span:last-child { color: var(--accent); font-weight: 700; }
+.objetivo-bar-bg {
+  height: 8px; background: var(--surface2); border-radius: 99px; overflow: hidden;
+}
+.objetivo-bar-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent3), var(--accent));
+  transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  min-width: 4px;
+}
+.objetivo-bar-fill.negative {
+  background: linear-gradient(90deg, #ff4757, #ff6b6b);
+}
+
+/* ── HISTÓRICO ── */
+.hist-table-wrap { overflow-x:auto; border-radius:16px; border:1px solid var(--border); }
+.hist-add-bar {
+  display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px;
+}
+.hist-input {
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px; padding: 9px 12px;
+  font-family: 'DM Mono', monospace; font-size: 13px; outline:none;
+  transition: border-color 0.2s; width: 150px;
+}
+.hist-input:focus { border-color: var(--accent); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 12px; padding: 14px 20px;
+  font-size: 13px; color: var(--accent);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(80px); opacity:0;
+  transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity:1; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius:99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ══════════════════════════════════════════
+   REGISTRO — NOVO VISUAL CARD-BASED
+══════════════════════════════════════════ */
+
+/* ── Painel de lançamento ── */
+.rodada-box {
+  background: #fff;
+  border: 1.5px solid #0078d4;
+  border-radius: 14px;
+  padding: 20px 22px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0,120,212,0.10);
+}
+.rodada-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700;
+  color: #0078d4; text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.rodada-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.seq-card {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 12px 10px;
+  display: flex; flex-direction: column; gap: 7px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  position: relative; overflow: hidden;
+}
+.seq-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--seq-color, #0078d4);
+  border-radius: 12px 12px 0 0;
+}
+.seq-card.card-p  { background: rgba(39,174,96,0.06);  border-color: #27ae60; --seq-color: #27ae60; }
+.seq-card.card-n  { background: rgba(196,43,28,0.06);  border-color: #c42b1c; --seq-color: #c42b1c; }
+.seq-card.card-inv{ background: rgba(199,118,10,0.08); border-color: #c7760a; --seq-color: #c7760a; }
+.seq-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.seq-card-num {
+  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 700;
+  color: #fff; background: var(--seq-color, #0078d4);
+  border-radius: 20px; padding: 2px 8px; line-height: 1.4;
+}
+.seq-card-streak {
+  font-size: 10px; font-weight: 700; color: var(--red);
+  background: rgba(196,43,28,0.10); border-radius: 20px;
+  padding: 2px 7px; display: none;
+}
+.seq-card-streak.visible { display: inline-block; }
+.seq-card-nado {
+  font-size: 11px; font-weight: 800;
+  padding: 4px 10px; border-radius: 6px; text-align: center;
+  letter-spacing: 0.3px;
+}
+.lado-a { background: #fff3e0; color: #c7760a; border: 1px solid #ffe0a0; }
+.lado-b { background: #e8f8f0; color: #1a6e3a; border: 1px solid #a0dbb8; }
+.seq-card-operação {
+  font-family: 'DM Mono', monospace;
+  font-size: 16px; font-weight: 700;
+  color: #005a9e; text-align: center;
+  background: #f0f7ff; border-radius: 7px;
+  padding: 5px 8px; border: 1px solid #cce0f5;
+}
+.seq-card-info {
+  font-size: 10px; color: var(--muted); text-align: center;
+}
+.seq-card-sel {
+  background: #fff; border: 1.5px solid #d0d0d0;
+  color: #1a1a1a; border-radius: 7px; padding: 6px 8px;
+  font-size: 12px; outline: none; cursor: pointer;
+  width: 100%; transition: border-color 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px;
+}
+.seq-card-sel:focus { border-color: #0078d4; }
+.seq-card-sel.sel-p { background-color: #e8f8f0; border-color: #27ae60; color: #1a6e3a; }
+.seq-card-sel.sel-n { background-color: #fdf0ef; border-color: #c42b1c; color: #7a1710; }
+.seq-card-pl {
+  font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 800;
+  text-align: center; line-height: 1;
+}
+.rodada-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 14px; border-top: 1px solid #e8e8e8; gap: 10px; flex-wrap: wrap;
+}
+.rodada-info {
+  font-size: 12px; color: var(--muted);
+  display: flex; gap: 16px; flex-wrap: wrap;
+}
+.rodada-info strong { color: var(--text); }
+.rodada-submit-btn {
+  background: #0078d4; color: #fff;
+  border: none; padding: 10px 24px; border-radius: 8px;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.rodada-submit-btn:hover { background: #106ebe; transform: translateY(-1px); }
+.rodada-submit-btn:disabled { background: #a0c4e8; cursor: not-allowed; transform: none; }
+.rodada-novo-btn {
+  background: #f0f7ff; color: #0078d4;
+  border: 1.5px solid #0078d4; padding: 10px 18px; border-radius: 8px;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.rodada-novo-btn:hover { background: #dceefa; }
+
+/* ── Histórico em cards colapsáveis ── */
+.hist-rodada-list { display: flex; flex-direction: column; gap: 10px; }
+.hist-rodada-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s;
+}
+.hist-rodada-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.10); }
+.hist-rodada-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; cursor: pointer;
+  user-select: none;
+  border-left: 4px solid var(--rodada-color, #0078d4);
+}
+.hist-rodada-header:hover { background: #f7f9fc; }
+.hist-rodada-num {
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 800;
+  color: var(--rodada-color, #0078d4); min-width: 56px;
+}
+.hist-rodada-pills {
+  display: flex; gap: 6px; flex-wrap: wrap; flex: 1;
+}
+.pill {
+  font-size: 11px; font-weight: 700; border-radius: 20px; padding: 3px 10px;
+  font-family: 'DM Mono', monospace;
+}
+.pill-p   { background: rgba(39,174,96,0.12);  color: #27ae60; }
+.pill-n   { background: rgba(196,43,28,0.12);  color: #c42b1c; }
+.pill-nuc { background: #f0f7ff; color: #005a9e; border: 1px solid #cce0f5; }
+.pill-saldo { background: #f5f5f5; color: var(--muted); font-size:10px; }
+.hist-rodada-toggle {
+  font-size: 14px; color: var(--muted); transition: transform 0.25s;
+  margin-left: auto;
+}
+.hist-rodada-toggle.open { transform: rotate(180deg); }
+.hist-rodada-body {
+  display: none; padding: 0 16px 14px;
+  border-top: 1px solid var(--border);
+}
+.hist-rodada-body.open { display: block; animation: fadeIn 0.2s ease; }
+.hist-seq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px; margin-top: 12px;
+}
+.hist-seq-mini {
+  background: var(--surface2); border-radius: 8px;
+  padding: 8px 10px; font-size: 11px;
+  border-left: 3px solid var(--sq-color, #ccc);
+}
+.hist-seq-mini .sq-num { font-weight: 700; color: var(--sq-color); margin-bottom: 3px; font-size: 10px; }
+.hist-seq-mini .sq-wl  { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 800; }
+.hist-seq-mini .sq-info{ color: var(--muted); font-size: 10px; margin-top: 2px; }
+
+/* ── BOTÕES DE RETORNO (substituem o select) ── */
+.seq-retorno-btns {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.seq-res-btn {
+  padding: 7px 4px; border-radius: 8px; border: 2px solid var(--border);
+  background: var(--surface2); color: var(--muted);
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s; text-align: center;
+  line-height: 1.2;
+}
+.seq-res-btn:hover { border-color: var(--accent); color: var(--accent); background: #f0f7ff; }
+.seq-res-btn.ativo-w {
+  background: #e8f8f0; border-color: #27ae60;
+  color: #27ae60; box-shadow: 0 0 0 2px rgba(39,174,96,0.15);
+}
+.seq-res-btn.ativo-l {
+  background: #fdf0ef; border-color: #c42b1c;
+  color: #c42b1c; box-shadow: 0 0 0 2px rgba(196,43,28,0.15);
+}
+body.dark-mode .seq-res-btn { background: var(--surface2); color: var(--muted); border-color: var(--border); }
+body.dark-mode .seq-res-btn.ativo-w { background: rgba(39,174,96,0.15); }
+body.dark-mode .seq-res-btn.ativo-l { background: rgba(196,43,28,0.15); }
+.table-scroll-wrap {
+  max-height: 480px; overflow-y: auto;
+  border-radius: 10px; border: 1px solid var(--border);
+}
+.table-scroll-wrap thead th {
+  position: sticky; top: 0; z-index: 2; background: #e8eef5;
+}
+
+/* Responsive */
+@media(max-width:700px){
+  header { padding: 14px 16px; }
+  .content { padding: 16px; }
+  .tabs { padding: 12px 16px 0; overflow-x:auto; }
+  .tab { padding: 8px 14px; font-size:12px; white-space:nowrap; }
+  .rodada-cards-grid { grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-icon">🎯</div>
+    <h1>Método Marantan</h1>
+    <p>Marco Antonio</p>
+    <input type="password" id="pwdInput" class="login-input" placeholder="••••••••" maxlength="20" autocomplete="off">
+    <button class="login-btn" onclick="doLogin()">ENTRAR</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ── BANNER ALERTA ── -->
+<div class="alert-banner" id="alertBanner"></div>
+
+<!-- ── MODAL RESUMO DO DIA ── -->
+<div class="modal-overlay" id="modalResumo">
+  <div class="modal-box">
+    <button class="modal-close" onclick="fecharModal('modalResumo')">✕</button>
+    <div class="modal-title">📋 Resumo do Dia</div>
+    <div class="modal-sub" id="resumoData">—</div>
+    <div class="resumo-grid" id="resumoKpis"></div>
+    <div class="modal-section">
+      <div class="modal-section-title">Retorno por Rodada</div>
+      <div id="resumoLotes"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal success" onclick="registrarDiaDoResumo()">✅ Registrar no Histórico</button>
+      <button class="btn-modal secondary" onclick="exportarCSV()">📄 Exportar CSV</button>
+      <button class="btn-modal secondary" onclick="exportarPDF()">🖨️ Exportar PDF</button>
+      <button class="btn-modal secondary" onclick="fecharModal('modalResumo')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL BACKUP ── -->
+<div class="modal-overlay" id="modalBackup">
+  <div class="modal-box">
+    <button class="modal-close" onclick="fecharModal('modalBackup')">✕</button>
+    <div class="modal-title">💾 Backup & Restaurar</div>
+    <div class="modal-sub">Salve seus dados ou restaure de um backup anterior.</div>
+    <div class="modal-section">
+      <div class="modal-section-title">Exportar dados (copie o texto abaixo)</div>
+      <textarea class="backup-area" id="backupExportArea" readonly></textarea>
+      <div class="modal-actions" style="margin-top:10px;margin-bottom:0">
+        <button class="btn-modal primary" onclick="copiarBackup()">📋 Copiar</button>
+        <button class="btn-modal secondary" onclick="baixarBackup()">⬇️ Baixar arquivo</button>
+      </div>
+    </div>
+    <div class="modal-section" style="margin-top:20px">
+      <div class="modal-section-title">Restaurar dados (cole o backup abaixo)</div>
+      <textarea class="backup-area" id="backupImportArea" placeholder="Cole aqui o conteúdo do backup..."></textarea>
+      <div class="modal-actions" style="margin-top:10px;margin-bottom:0">
+        <button class="btn-modal danger" onclick="restaurarBackup()">⚠️ Restaurar (sobrescreve tudo)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div id="app">
+  <header>
+    <div class="logo">🎯 <span>Método</span> Marantan</div>
+    <div class="header-objetivo">
+      <span>Capital hoje:</span>
+      <span class="header-capital" id="headerBanca">R$ 0,00</span>
+      <button class="dark-toggle" onclick="toggleDark()" id="darkBtn">🌙 Escuro</button>
+      <button class="logout-btn" onclick="abrirResumo()" style="background:rgba(255,255,255,0.18);color:#fff;border-color:rgba(255,255,255,0.3)">📋 Resumo</button>
+      <button class="logout-btn" onclick="abrirBackup()" style="background:rgba(255,255,255,0.18);color:#fff;border-color:rgba(255,255,255,0.3)">💾 Backup</button>
+      <button class="logout-btn" onclick="doLogout()">Sair</button>
+      <button onclick="panico()" title="Fechar agora (ou pressione ESC 2x)" style="background:#c42b1c;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;letter-spacing:0.3px;transition:all 0.15s" onmouseover="this.style.background='#a01e14'" onmouseout="this.style.background='#c42b1c'">🚨 Fechar</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('painel')">📊 Painel</div>
+    <div class="tab" onclick="switchTab('registro')">📋 Registro</div>
+    <div class="tab" onclick="switchTab('historico')">📅 Histórico</div>
+    <div class="tab" onclick="switchTab('grafico')">📈 Gráfico</div>
+    <div class="tab" onclick="switchTab('config')">⚙️ Config</div>
+  </div>
+
+  <!-- ════ PAINEL ════ -->
+  <div class="content">
+    <div id="tab-painel" class="tab-panel active">
+
+      <!-- BANNER TOPO -->
+      <div style="background:linear-gradient(135deg,#0055a0 0%,#0078d4 60%,#1a9fff 100%);border-radius:16px;padding:22px 28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;box-shadow:0 4px 20px rgba(0,120,212,0.2)">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px">🎯 Método Marantan</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-top:3px" id="painelDataHora">—</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:1px">Capital Atual</div>
+          <div style="font-family:'DM Mono',monospace;font-size:26px;font-weight:700;color:#fff" id="headerBanca2">R$ 0,00</div>
+        </div>
+      </div>
+
+      <!-- BARRA DE OBJETIVO -->
+      <div style="background:var(--surface);border-radius:14px;padding:18px 22px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <span style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)">📊 Progresso do Objetivo Diário</span>
+            <span id="kpiStatus" style="margin-left:10px;font-size:11px;color:var(--muted)">em andamento</span>
+          </div>
+          <span id="metaBarPct" style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--accent)">0%</span>
+        </div>
+        <div style="height:12px;background:var(--surface2);border-radius:99px;overflow:hidden">
+          <div id="metaBarFill" style="height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#5c2d91,#0078d4);transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--muted)">
+          <span>Capital Inicial: <strong id="kpiBancaSub2" style="color:var(--text)">—</strong></span>
+          <span>Objetivo: <strong id="kpiMetaRef" style="color:var(--accent)">3%</strong></span>
+        </div>
+      </div>
+
+      <!-- KPIs linha 1 — financeiros principais -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="kpi" style="--kpi-color:var(--gold)">
+          <div class="kpi-label">💰 Capital Atual</div>
+          <div class="kpi-value" id="kpiBanca">R$ 0</div>
+          <div class="kpi-sub" id="kpiBancaSub">início do dia</div>
+        </div>
+        <div class="kpi" style="--kpi-color:#27ae60">
+          <div class="kpi-label">📈 Rendimento Dia</div>
+          <div class="kpi-value" id="kpiLucro">R$ 0,00</div>
+          <div class="kpi-sub" id="kpiLucroSub">—</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--accent3)">
+          <div class="kpi-label">% Rendimento</div>
+          <div class="kpi-value" id="kpiPct">0.00%</div>
+          <div class="kpi-sub">objetivo: <span id="kpiMetaRef2">3%</span></div>
+        </div>
+      </div>
+
+      <!-- KPIs linha 2 — operacionais -->
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px">
+        <div class="kpi" style="--kpi-color:#0066b3;padding:12px 10px">
+          <div class="kpi-label" style="font-size:9px">🎲 Próx. Operação</div>
+          <div class="kpi-value" style="font-size:14px" id="kpiProxima">R$ 0</div>
+          <div class="kpi-sub" style="font-size:9px" id="kpiProximaSub">—</div>
+        </div>
+        <div class="kpi" style="--kpi-color:#27ae60;padding:12px 10px">
+          <div class="kpi-label" style="font-size:9px">✅ Positivos</div>
+          <div class="kpi-value" style="font-size:20px" id="kpiWins">0</div>
+          <div class="kpi-sub" style="font-size:9px" id="kpiWinPct">taxa 0%</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--red);padding:12px 10px">
+          <div class="kpi-label" style="font-size:9px">❌ Negativos</div>
+          <div class="kpi-value" style="font-size:20px" id="kpiLoss">0</div>
+          <div class="kpi-sub" style="font-size:9px" id="kpiStreak">ciclo: 0</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--gold);padding:12px 10px">
+          <div class="kpi-label" style="font-size:9px">🔄 Rebalanceamentos</div>
+          <div class="kpi-value" style="font-size:20px" id="kpiInv">0</div>
+          <div class="kpi-sub" style="font-size:9px">trocas de lado</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--accent);padding:12px 10px">
+          <div class="kpi-label" style="font-size:9px">🎮 Operações</div>
+          <div class="kpi-value" style="font-size:20px" id="kpiJogos">0</div>
+          <div class="kpi-sub" style="font-size:9px">/ <span id="kpiLimite">50</span> limite</div>
+        </div>
+      </div>
+
+      <!-- Simulação de ciclos negativos -->
+      <div style="background:var(--surface);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)">
+        <div style="background:linear-gradient(90deg,#8e1a10,#c42b1c);padding:13px 20px;display:flex;align-items:center;gap:10px">
+          <span style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px">📉 Simulação de Ciclos Negativos</span>
+          <span style="font-size:11px;color:rgba(255,255,255,0.65)">impacto de perdas consecutivas</span>
+        </div>
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="background:var(--surface2)">
+              <th style="padding:9px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);text-align:center;border-bottom:1px solid var(--border)">Ciclo Nº</th>
+              <th style="padding:9px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);text-align:center;border-bottom:1px solid var(--border)">Operação (R$)</th>
+              <th style="padding:9px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);text-align:center;border-bottom:1px solid var(--border)">% do Capital</th>
+              <th style="padding:9px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);text-align:center;border-bottom:1px solid var(--border)">Perda Acum.</th>
+              <th style="padding:9px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);text-align:center;border-bottom:1px solid var(--border)">Precisaria de</th>
+            </tr>
+          </thead>
+          <tbody id="progBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════ REGISTRO ════ -->
+    <div id="tab-registro" class="tab-panel">
+
+      <!-- RODADA DE OPERAÇÕES — CARDS -->
+      <div class="rodada-box" id="loteBox">
+        <div class="rodada-title">🎯 <span id="loteTitulo">Carregando...</span></div>
+        <!-- Cards gerados pelo JS -->
+        <div class="rodada-cards-grid" id="loteRows"></div>
+        <div class="rodada-footer">
+          <div class="rodada-info" id="loteInfo"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="rodada-novo-btn" onclick="novoLote()">🔄 Novo Rodada</button>
+            <button class="rodada-submit-btn" id="loteSubmitBtn" onclick="confirmarLote()">✅ Confirmar Retornos</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- status + reset -->
+      <div class="action-bar">
+        <div style="font-size:13px;color:var(--muted)">
+          Ativo: <strong id="ladoSugerido" style="color:#0078d4">—</strong>
+          &nbsp;|&nbsp; Saldo atual: <strong id="proximaApostaBar" style="color:#005a9e;font-family:'DM Mono',monospace">—</strong>
+        </div>
+        <button class="reset-btn" onclick="resetDia()">🗑 Resetar Dia</button>
+      </div>
+
+      <!-- HISTÓRICO — CARDS COLAPSÁVEIS -->
+      <div class="section-title">📋 Histórico do Dia</div>
+      <div class="hist-rodada-list" id="jogosBody"></div>
+    </div>
+
+    <!-- ════ HISTÓRICO ════ -->
+    <div id="tab-historico" class="tab-panel">
+      <div class="hist-add-bar">
+        <input type="date" id="histData" class="hist-input" style="width:140px">
+        <input type="number" placeholder="Capital início (R$)" id="histBancaInicio" class="hist-input">
+        <input type="number" placeholder="Capital final (R$)" id="histBancaFim" class="hist-input">
+        <input type="number" placeholder="Jogos" id="histJogos" class="hist-input" style="width:90px">
+        <input type="number" placeholder="P" id="histW" class="hist-input" style="width:70px">
+        <input type="number" placeholder="N" id="histL" class="hist-input" style="width:70px">
+        <button class="add-btn" onclick="addHistorico()">+ Adicionar</button>
+      </div>
+      <div class="hist-table-wrap">
+        <table>
+          <thead><tr>
+            <th>Data</th><th>Capital Início</th><th>Capital Final</th>
+            <th>Rendimento/Prej</th><th>% Dia</th><th>Jogos</th><th>P</th><th>N</th><th>Taxa</th><th>-</th>
+          </tr></thead>
+          <tbody id="histBody"></tbody>
+          <tfoot id="histFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════ CONFIG ════ -->
+    <div id="tab-config" class="tab-panel">
+      <div class="section-title">💰 Parâmetros Financeiros</div>
+      <div class="config-grid">
+        <div class="config-item">
+          <div><div class="config-label">Capital Inicial do Dia (R$)</div><div class="config-desc">Valor disponível hoje</div></div>
+          <input type="number" class="config-input" id="cfg_banca" value="1000">
+        </div>
+        <div class="config-item">
+          <div><div class="config-label">Operação Base (%)</div><div class="config-desc">% da capital por jogo</div></div>
+          <input type="number" class="config-input" id="cfg_base_pct" value="1" step="0.1">
+        </div>
+        <div class="config-item">
+          <div><div class="config-label">Odd Média</div><div class="config-desc">Odd de Ambos Marcam</div></div>
+          <input type="number" class="config-input" id="cfg_odd" value="1.83" step="0.01">
+        </div>
+        <div class="config-item">
+          <div><div class="config-label">Objetivo Diária (%)</div><div class="config-desc">Rendimento alvo p/ parar</div></div>
+          <input type="number" class="config-input" id="cfg_meta_pct" value="3" step="0.5">
+        </div>
+        <div class="config-item">
+          <div><div class="config-label">Limite de Jogos/Dia</div><div class="config-desc">Máximo diário</div></div>
+          <input type="number" class="config-input" id="cfg_limite" value="50">
+        </div>
+        <div class="config-item">
+          <div><div class="config-label">Incremento por Negativo (%)</div><div class="config-desc">Aumento após perda</div></div>
+          <input type="number" class="config-input" id="cfg_incr" value="30" step="5">
+        </div>
+        <div class="config-item">
+          <div><div class="config-label">Gatilho Rebalanceamento (negativos)</div><div class="config-desc">Negativos para trocar lado</div></div>
+          <input type="number" class="config-input" id="cfg_gatilho" value="3">
+        </div>
+        <div class="config-item">
+          <div><div class="config-label">Retorno Pós-Ciclo (%)</div><div class="config-desc">% da última operação</div></div>
+          <input type="number" class="config-input" id="cfg_retorno" value="50" step="5">
+        </div>
+        <div class="config-item" style="border:1.5px solid #0078d4;background:#f0f7ff;">
+          <div><div class="config-label" style="color:#0078d4">🎯 Jogos por Rodada</div><div class="config-desc">Operações simultâneas (1 a 20)</div></div>
+          <input type="number" class="config-input" id="cfg_lote_qtd" value="10" min="1" max="20" style="border-color:#0078d4;color:#0078d4;font-weight:700;">
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveConfig()">💾 Salvar Configurações</button>
+
+      <div style="margin-top:32px"></div>
+      <div class="section-title">🎯 Ativo & Opções de Operação</div>
+      <div style="background:#f0f7ff;border:1.5px solid #0078d4;border-radius:12px;padding:14px 18px;margin-bottom:14px;font-size:12px;color:var(--muted)">
+        Defina o nome do ativo e as duas opções. Exemplos:<br>
+        <strong>Ambos Marcam</strong> → Sim / Não &nbsp;|&nbsp;
+        <strong>Total de Gols</strong> → Mais de 2.5 / Menos de 2.5 &nbsp;|&nbsp;
+        <strong>Retorno</strong> → Casa / Fora
+      </div>
+      <div class="config-grid">
+        <div class="config-item" style="grid-column:1/-1;border:1.5px solid #0078d4;background:#f0f7ff;">
+          <div><div class="config-label" style="color:#0078d4">📋 Nome do Ativo</div><div class="config-desc">Ex: Ambos Marcam, Total de Gols...</div></div>
+          <input type="text" class="config-input" id="cfg_mercado" value="Ambos Marcam" style="width:200px;letter-spacing:0;font-size:13px;text-align:left;border-color:#0078d4;">
+        </div>
+        <div class="config-item" style="border:1.5px solid #27ae60;background:#f0faf5;">
+          <div><div class="config-label" style="color:#27ae60">✅ Opção A</div><div class="config-desc">Primeira opção de operação</div></div>
+          <input type="text" class="config-input" id="cfg_opcao_a" value="Ambos NÃO" style="width:140px;letter-spacing:0;font-size:13px;text-align:left;border-color:#27ae60;">
+        </div>
+        <div class="config-item" style="border:1.5px solid #c42b1c;background:#fdf5f5;">
+          <div><div class="config-label" style="color:#c42b1c">❌ Opção B</div><div class="config-desc">Segunda opção de operação</div></div>
+          <input type="text" class="config-input" id="cfg_opcao_b" value="Ambos SIM" style="width:140px;letter-spacing:0;font-size:13px;text-align:left;border-color:#c42b1c;">
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveConfig()">💾 Salvar Configurações</button>
+
+      <div style="margin-top:32px"></div>
+      <div class="section-title">🔐 Alterar Senha</div>
+      <div class="config-grid">
+        <div class="config-item">
+          <div><div class="config-label">Nova Senha</div><div class="config-desc">Mínimo 4 caracteres</div></div>
+          <input type="password" class="config-input" id="newPwd" placeholder="nova senha">
+        </div>
+        <div class="config-item">
+          <div><div class="config-label">Confirmar Senha</div><div class="config-desc">Repita a senha</div></div>
+          <input type="password" class="config-input" id="confirmPwd" placeholder="confirme">
+        </div>
+      </div>
+      <button class="save-btn" onclick="savePwd()">🔐 Alterar Senha</button>
+    </div>
+    <!-- ════ GRÁFICO ════ -->
+    <div id="tab-grafico" class="tab-panel">
+
+      <!-- KPIs do gráfico -->
+      <div class="kpi-grid" style="margin-bottom:20px">
+        <div class="kpi" style="--kpi-color:var(--accent)">
+          <div class="kpi-label">🏦 Capital Inicial</div>
+          <div class="kpi-value" id="gBancaInicial">—</div>
+          <div class="kpi-sub" id="gDataInicio">—</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--gold)">
+          <div class="kpi-label">📅 Dias Registrados</div>
+          <div class="kpi-value" id="gDiasReais">0</div>
+          <div class="kpi-sub">de 100 projetados</div>
+        </div>
+        <div class="kpi" style="--kpi-color:#27ae60">
+          <div class="kpi-label">🎯 Objetivo em 100 dias</div>
+          <div class="kpi-value" id="gMeta100">—</div>
+          <div class="kpi-sub" id="gMeta100pct">com <span id="gMetaPctDia">3</span>%/dia</div>
+        </div>
+        <div class="kpi" style="--kpi-color:var(--accent3)">
+          <div class="kpi-label">📈 Capital Atual Real</div>
+          <div class="kpi-value" id="gBancaAtual">—</div>
+          <div class="kpi-sub" id="gDiferencaMeta">vs projeção</div>
+        </div>
+      </div>
+
+      <!-- Gráfico -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <div class="section-title" style="margin-bottom:0;flex:1">📈 Crescimento da Capital — Real vs Projeção</div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px">
+              <input type="checkbox" id="chkProjecao" checked onchange="renderGrafico()"> Projeção (objetivo)
+            </label>
+            <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px">
+              <input type="checkbox" id="chkCenarioOtimista" onchange="renderGrafico()"> Cenário +50%
+            </label>
+            <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px">
+              <input type="checkbox" id="chkCenarioConservador" onchange="renderGrafico()"> Cenário -50%
+            </label>
+          </div>
+        </div>
+        <div style="position:relative;height:380px">
+          <canvas id="graficoCrescimento"></canvas>
+        </div>
+      </div>
+
+      <!-- Tabela resumida de projeção -->
+      <div class="section-title">📋 Marcos da Projeção (a cada 10 dias)</div>
+      <div class="table-scroll-wrap">
+        <table>
+          <thead><tr>
+            <th>Dia</th>
+            <th>Data Estimada</th>
+            <th>Projeção Objetivo (R$)</th>
+            <th>Cenário +50% (R$)</th>
+            <th>Cenário -50% (R$)</th>
+            <th>Real (R$)</th>
+            <th>Dif. vs Objetivo</th>
+          </tr></thead>
+          <tbody id="tabelaProjecao"></tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:16px;padding:14px 18px;background:#f0f7ff;border:1px solid #cce0f5;border-radius:10px;font-size:12px;color:var(--muted);line-height:1.7">
+        <strong style="color:var(--accent)">ℹ️ Como ler o gráfico:</strong><br>
+        🔵 <strong>Linha azul</strong> = capital real (dados do histórico)<br>
+        🟢 <strong>Linha verde</strong> = projeção com objetivo de <span id="gLegendaMeta">3</span>% ao dia por 100 dias<br>
+        🟡 <strong>Cenário +50%</strong> = se render 50% acima da objetivo diária<br>
+        🔴 <strong>Cenário -50%</strong> = se render 50% abaixo da objetivo diária<br>
+        A projeção começa no primeiro dia do histórico e se estende até o dia 100.
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Captura qualquer erro JS e mostra na tela de login
+window.onerror = function(msg, src, line) {
+  const el = document.getElementById('loginError');
+  if (el) el.textContent = '⚠️ Erro JS linha ' + line + ': ' + msg;
+  return false;
+};
+
+// ════════════════════════════════════════════
+// ESTADO GLOBAL
+// ════════════════════════════════════════════
+const DEFAULT_CFG = {
+  capital: 1000, base_pct: 1, odd: 1.83, meta_pct: 3,
+  limite: 50, incr: 30, gatilho: 3, retorno: 50, lote_qtd: 10,
+  ativo: 'Ambos Marcam', opcao_a: 'Ambos NÃO', opcao_b: 'Ambos SIM'
+};
+const DEFAULT_PWD = "123";
+
+function loadState() {
+  try {
+    return {
+      cfg:       JSON.parse(localStorage.getItem('esm_cfg')   || JSON.stringify(DEFAULT_CFG)),
+      seqs:      JSON.parse(localStorage.getItem('esm_seqs')  || 'null') || [],
+      historico: JSON.parse(localStorage.getItem('esm_hist')  || '[]'),
+      lote_num:  parseInt(localStorage.getItem('esm_lotenum') || '1'),
+      pwd:       DEFAULT_PWD,
+    };
+  } catch(e) {
+    // Se localStorage corrompido, começa do zero
+    return { cfg: {...DEFAULT_CFG}, seqs: [], historico: [], lote_num: 1, pwd: DEFAULT_PWD };
+  }
+}
+function saveState() {
+  localStorage.setItem('esm_cfg',     JSON.stringify(STATE.cfg));
+  localStorage.setItem('esm_seqs',    JSON.stringify(STATE.seqs));
+  localStorage.setItem('esm_hist',    JSON.stringify(STATE.historico));
+  localStorage.setItem('esm_lotenum', STATE.lote_num);
+}
+let STATE = loadState();
+
+function ensureSeqs() {
+  const qtd = STATE.cfg.lote_qtd || 10;
+  while (STATE.seqs.length < qtd) STATE.seqs.push([]);
+}
+
+function calcSaldoGlobal() {
+  const cfg = STATE.cfg;
+  let saldo = cfg.capital;
+  STATE.seqs.forEach(seq => {
+    seq.forEach(j => {
+      if (j.wl === 'P') saldo += j.operação * (cfg.odd - 1);
+      else if (j.wl === 'N') saldo -= j.operação;
+    });
+  });
+  return saldo;
+}
+
+function totalJogosGeral() {
+  return STATE.seqs.reduce((acc, s) => acc + s.length, 0);
+}
+
+// ════════════════════════════════════════════
+// LOGIN
+// ════════════════════════════════════════════
+document.getElementById('pwdInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doLogin();
+  document.getElementById('loginError').textContent = '';
+});
+document.getElementById('pwdInput').addEventListener('input', function() {
+  document.getElementById('loginError').textContent = '';
+});
+
+function doLogin() {
+  try {
+    const v = document.getElementById('pwdInput').value;
+    if (v === STATE.pwd) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      renderAll();
+    } else {
+      const el = document.getElementById('loginError');
+      el.textContent = '❌ Senha incorreta. Tente novamente.';
+      el.style.animation = 'none';
+      requestAnimationFrame(() => el.style.animation = 'shake 0.4s');
+      document.getElementById('pwdInput').value = '';
+    }
+  } catch(e) {
+    document.getElementById('loginError').textContent = '⚠️ Erro: ' + e.message;
+  }
+}
+function doLogout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('loginError').textContent = '';
+}
+
+// ════════════════════════════════════════════
+// TABS
+// ════════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const tabs = ['painel','registro','historico','grafico','config'];
+    t.classList.toggle('active', tabs[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'tab-'+name);
+  });
+  if (name === 'painel')    renderPainel();
+  if (name === 'registro')  renderRegistro();
+  if (name === 'historico') renderHistorico();
+  if (name === 'grafico')   renderGrafico();
+  if (name === 'config')    renderConfig();
+}
+
+// ════════════════════════════════════════════
+// LÓGICA DO MÉTODO — POR SEQUÊNCIA
+// ════════════════════════════════════════════
+function getStreak(seq) {
+  let s = 0;
+  for (let i = seq.length - 1; i >= 0; i--) {
+    if (seq[i].wl === 'N') s++; else break;
+  }
+  return s;
+}
+function getStreakAt(seq, idx) {
+  let s = 0;
+  for (let i = idx; i >= 0; i--) {
+    if (seq[i].wl === 'N') s++; else break;
+  }
+  return s;
+}
+function computeProxApostaSeq(seq, cfg) {
+  const base = cfg.capital * (cfg.base_pct / 100);
+  if (!seq.length) return base;
+  const last = seq[seq.length - 1];
+  if (!last.wl || last.wl === '') return last.operação;
+
+  if (last.wl === 'P') {
+    // Verifica se vinha de uma ciclo de negativos (streak > 0 antes dessa positivo)
+    const prevStreak = seq.length >= 2 ? getStreakAt(seq, seq.length - 2) : 0;
+    if (prevStreak >= 1) {
+      // Retorno suavizado: 50% da última operação, mas NUNCA abaixo da base
+      const retorno = last.operação * (cfg.retorno / 100);
+      return Math.max(retorno, base);
+    }
+    // Positivo normal (sem ciclo anterior): mantém a base
+    return base;
+  }
+
+  // Negativo: incrementa, mas NUNCA abaixo da base
+  const incrementado = last.operação * (1 + cfg.incr / 100);
+  return Math.max(incrementado, base);
+}
+function getLadoSeq(seq, cfg) {
+  const opcA = cfg.opcao_a || 'Ambos NÃO';
+  const opcB = cfg.opcao_b || 'Ambos SIM';
+  if (!seq.length) return opcA;
+  const streak = getStreak(seq);
+  const last = seq[seq.length - 1];
+  if (streak >= cfg.gatilho) {
+    return last.lado === opcA ? opcB : opcA;
+  }
+  return last.lado || opcA;
+}
+
+// ════════════════════════════════════════════
+// RENDER PAINEL
+// ════════════════════════════════════════════
+function renderPainel() {
+  const cfg = STATE.cfg;
+  ensureSeqs();
+
+  let totalW = 0, totalL = 0, totalInv = 0;
+  STATE.seqs.forEach(seq => {
+    seq.forEach((j, i) => {
+      if (j.wl === 'P') totalW++;
+      else if (j.wl === 'N') totalL++;
+      if (i > 0 && seq[i-1] && j.lado !== seq[i-1].lado) totalInv++;
+    });
+  });
+  const total    = totalW + totalL;
+  const saldo    = calcSaldoGlobal();
+  const rendimento    = saldo - cfg.capital;
+  const pctDia   = rendimento / cfg.capital * 100;
+  const metaR    = cfg.capital * (cfg.meta_pct / 100);
+  const progPct  = Math.max(0, Math.min(100, (rendimento / metaR) * 100));
+  const maxStreak= Math.max(0, ...STATE.seqs.map(s => getStreak(s)));
+  const baseVal  = cfg.capital * (cfg.base_pct / 100);
+
+  // Header banca (dois lugares agora)
+  document.getElementById('headerBanca').textContent = fmt(saldo);
+  const hb2 = document.getElementById('headerBanca2');
+  if (hb2) hb2.textContent = fmt(saldo);
+
+  // Data e hora no banner
+  const dhEl = document.getElementById('painelDataHora');
+  if (dhEl) {
+    const agora = new Date();
+    dhEl.textContent = agora.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long'})
+      + ' · ' + agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+  }
+
+  // Banca sub secundário
+  const bs2 = document.getElementById('kpiBancaSub2');
+  if (bs2) bs2.textContent = fmt(cfg.banca);
+
+  // Meta ref secundário
+  const mr2 = document.getElementById('kpiMetaRef2');
+  if (mr2) mr2.textContent = cfg.meta_pct.toFixed(1) + '%';
+
+  // Objetivo bar
+  document.getElementById('metaBarPct').textContent = progPct.toFixed(1) + '%';
+  const fill = document.getElementById('metaBarFill');
+  fill.style.width = Math.max(0, Math.min(100, Math.abs(progPct))) + '%';
+  fill.className = 'objetivo-bar-fill' + (rendimento < 0 ? ' negative' : '');
+
+  // KPIs
+  document.getElementById('kpiBanca').textContent    = fmt(saldo);
+  document.getElementById('kpiBancaSub').textContent = 'início: ' + fmt(cfg.capital);
+  document.getElementById('kpiLucro').textContent    = (rendimento >= 0 ? '+' : '') + fmt(rendimento);
+  document.getElementById('kpiLucro').style.color    = rendimento >= 0 ? 'var(--accent)' : 'var(--red)';
+  document.getElementById('kpiLucroSub').textContent = Math.abs(pctDia).toFixed(1) + '% da objetivo (' + cfg.meta_pct + '%)';
+  document.getElementById('kpiPct').textContent      = (pctDia >= 0 ? '+' : '') + pctDia.toFixed(2) + '%';
+  document.getElementById('kpiPct').style.color      = pctDia >= cfg.meta_pct ? 'var(--accent)' : pctDia < 0 ? 'var(--red)' : 'var(--accent3)';
+  document.getElementById('kpiMetaRef').textContent  = cfg.meta_pct.toFixed(1) + '%';
+  document.getElementById('kpiProxima').textContent  = fmt(baseVal) + ' × ' + cfg.lote_qtd;
+  document.getElementById('kpiProximaSub').textContent = 'por rodada (' + cfg.lote_qtd + ' seqs)';
+  document.getElementById('kpiWins').textContent     = totalW;
+  document.getElementById('kpiWinPct').textContent   = 'taxa ' + (total ? (totalW/total*100).toFixed(0) : 0) + '%';
+  document.getElementById('kpiLoss').textContent     = totalL;
+  document.getElementById('kpiStreak').textContent   = 'max seq: ' + maxStreak;
+  document.getElementById('kpiInv').textContent      = totalInv;
+  document.getElementById('kpiJogos').textContent    = totalJogosGeral() + ' / ';
+  document.getElementById('kpiLimite').textContent   = cfg.limite;
+  const status = pctDia >= cfg.meta_pct ? '🏆 OBJETIVO ATINGIDA - PARE!'
+               : totalJogosGeral() >= cfg.limite ? '⛔ LIMITE DE JOGOS'
+               : '▶️ Rodada #' + STATE.lote_num;
+  document.getElementById('kpiStatus').textContent   = status;
+
+  // Progressão simulada (baseada na operação base)
+  const tbody = document.getElementById('progBody');
+  tbody.innerHTML = '';
+  let ap = baseVal, acum = 0;
+  for (let i = 0; i < 8; i++) {
+    const pct = ap / cfg.capital * 100;
+    acum += ap;
+    const needed = acum / (cfg.odd - 1);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="mono text-accent">${i+1}</td>
+      <td class="mono text-red">${fmt(ap)}</td>
+      <td class="mono">${pct.toFixed(2)}%</td>
+      <td class="mono text-red">${fmt(acum)}</td>
+      <td class="mono text-accent">${fmt(needed)}</td>`;
+    tbody.appendChild(tr);
+    ap = ap * (1 + cfg.incr / 100);
+  }
+}
+
+// ════════════════════════════════════════════
+// RODADA — SEQUÊNCIAS PARALELAS INDEPENDENTES
+// ════════════════════════════════════════════
+let LOTE_PENDENTE = [];
+
+function initLote() {
+  ensureSeqs();
+  LOTE_PENDENTE = [];
+  const cfg = STATE.cfg;
+  const loteQtd = cfg.lote_qtd || 10;
+  for (let i = 0; i < loteQtd; i++) {
+    const seq    = STATE.seqs[i] || [];
+    const operação = computeProxApostaSeq(seq, cfg);
+    const lado   = getLadoSeq(seq, cfg);
+    LOTE_PENDENTE.push({ pos: i, lado, operação: +operação.toFixed(2), retorno: '', seq_len: seq.length });
+  }
+  renderLote();
+}
+
+function renderLote() {
+  const cfg     = STATE.cfg;
+  const loteQtd = cfg.lote_qtd || 10;
+  const opcA    = cfg.opcao_a || 'Ambos NÃO';
+  const opcB    = cfg.opcao_b || 'Ambos SIM';
+  const ativo = cfg.ativo || 'Ativo';
+  const qtd     = LOTE_PENDENTE.length;
+  const preench = LOTE_PENDENTE.filter(p => p.retorno).length;
+
+  document.getElementById('loteTitulo').textContent =
+    qtd === 0 ? 'Limite atingido' : `Rodada #${STATE.lote_num} · ${ativo} · ${loteQtd} ciclos`;
+
+  const grid = document.getElementById('loteRows');
+  grid.innerHTML = '';
+
+  LOTE_PENDENTE.forEach((item, i) => {
+    const wl     = item.lado && item.retorno ? (item.lado === item.retorno ? 'P' : 'N') : '';
+    const seq    = STATE.seqs[i] || [];
+    const streak = getStreak(seq);
+    const isOpcA = item.lado === opcA;
+
+    // Estado do card
+    let cardClass = 'seq-card';
+    if (wl === 'P') cardClass += ' card-p';
+    else if (wl === 'N') cardClass += (streak >= cfg.gatilho ? ' card-inv' : ' card-n');
+
+    const card = document.createElement('div');
+    card.className = cardClass;
+
+    // Header: número + streak badge
+    const header = document.createElement('div');
+    header.className = 'seq-card-header';
+    header.innerHTML = `
+      <span class="seq-card-num">SEQ ${i + 1}</span>
+      <span class="seq-card-streak ${streak > 0 ? 'visible' : ''}">🔴 ${streak}</span>`;
+    card.appendChild(header);
+
+    // Lado badge
+    const ladoBadge = document.createElement('div');
+    ladoBadge.className = 'seq-card-nado ' + (isOpcA ? 'lado-a' : 'lado-b');
+    ladoBadge.textContent = item.lado;
+    card.appendChild(ladoBadge);
+
+    // Valor operação
+    const apostaEl = document.createElement('div');
+    apostaEl.className = 'seq-card-operação';
+    apostaEl.textContent = fmt(item.operação);
+    card.appendChild(apostaEl);
+
+    // Info da ciclo
+    const infoEl = document.createElement('div');
+    infoEl.className = 'seq-card-info';
+    infoEl.textContent = seq.length > 0 ? `${seq.length} jogo${seq.length > 1 ? 's' : ''} anteriores` : 'Ciclo nova';
+    card.appendChild(infoEl);
+
+    // Botões de retorno (substituem o select)
+    const btnsDiv = document.createElement('div');
+    btnsDiv.className = 'seq-retorno-btns';
+
+    const btnA = document.createElement('button');
+    btnA.className = 'seq-res-btn' + (item.retorno === opcA ? ' ativo-w' : '');
+    btnA.innerHTML = (item.retorno === opcA ? '✅ ' : '') + opcA;
+    btnA.title = 'Retorno: ' + opcA;
+    btnA.onclick = function() {
+      // Toggle: se já está marcado, desmarca
+      LOTE_PENDENTE[i].retorno = LOTE_PENDENTE[i].retorno === opcA ? '' : opcA;
+      renderLote();
+    };
+
+    const btnB = document.createElement('button');
+    btnB.className = 'seq-res-btn' + (item.retorno === opcB ? ' ativo-l' : '');
+    btnB.innerHTML = (item.retorno === opcB ? '❌ ' : '') + opcB;
+    btnB.title = 'Retorno: ' + opcB;
+    btnB.onclick = function() {
+      LOTE_PENDENTE[i].retorno = LOTE_PENDENTE[i].retorno === opcB ? '' : opcB;
+      renderLote();
+    };
+
+    btnsDiv.appendChild(btnA);
+    btnsDiv.appendChild(btnB);
+    card.appendChild(btnsDiv);
+
+    // P/N grande
+    if (wl) {
+      const wlEl = document.createElement('div');
+      wlEl.className = 'seq-card-pl';
+      wlEl.textContent = wl;
+      wlEl.style.color = wl === 'P' ? '#27ae60' : '#c42b1c';
+      card.appendChild(wlEl);
+    }
+
+    grid.appendChild(card);
+  });
+
+  if (qtd === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px">⛔ Limite de jogos do dia atingido.</div>';
+  }
+
+  const infoEl = document.getElementById('loteInfo');
+  infoEl.innerHTML = `<span>Preenchidos: <strong>${preench}/${qtd}</strong></span>
+    <span>Ativo: <strong>${ativo}</strong></span>
+    <span>Rodada: <strong>#${STATE.lote_num}</strong></span>`;
+
+  const btn = document.getElementById('loteSubmitBtn');
+  btn.disabled = preench === 0;
+  btn.textContent = preench > 0 ? `✅ Confirmar ${preench} retorno${preench > 1 ? 's' : ''}` : '✅ Confirmar Retornos';
+}
+
+
+function confirmarLote() {
+  const preench = LOTE_PENDENTE.filter(p => p.retorno);
+  if (!preench.length) { showToast('⚠️ Preencha pelo menos um retorno!'); return; }
+  ensureSeqs();
+
+  // Salva cada retorno confirmado na ciclo correta
+  LOTE_PENDENTE.forEach(item => {
+    if (!item.retorno) return;
+    const wl = item.lado === item.retorno ? 'P' : 'N';
+    STATE.seqs[item.pos].push({
+      lado: item.lado, retorno: item.retorno,
+      operação: item.operação, wl, rodada: STATE.lote_num
+    });
+  });
+
+  // Avança o número do rodada sempre que confirmar
+  STATE.lote_num++;
+  saveState();
+
+  // Recalcula o próximo rodada com base nos novos retornos
+  // (aplica incremento nas negativos, rebalanceamento, retorno suavizado, etc.)
+  initLote();
+  verificarAlertas();
+  renderRegistro();
+  renderPainel();
+  showToast(`✅ ${preench.length} retorno(s) confirmado(s)! Rodada #${STATE.lote_num} pronto.`);
+}
+
+function novoLote() {
+  const semRes  = LOTE_PENDENTE.filter(p => !p.retorno);
+  const comRes  = LOTE_PENDENTE.filter(p => p.retorno);
+
+  if (comRes.length > 0 && semRes.length > 0) {
+    // Tem alguns preenchidos e alguns não — confirma os preenchidos
+    if (!confirm(`${semRes.length} ciclo(s) sem retorno. Confirmar as preenchidas e gerar novo rodada?`)) return;
+    confirmarLote(); // já chama initLote() internamente
+  } else if (comRes.length > 0) {
+    // Todos preenchidos — confirma tudo
+    confirmarLote(); // já chama initLote() internamente
+  } else {
+    // Nenhum preenchido — apenas gera novo rodada sem confirmar
+    STATE.lote_num++;
+    saveState();
+    initLote();
+    showToast('🔄 Rodada #' + STATE.lote_num + ' gerado!');
+  }
+}
+
+
+// ════════════════════════════════════════════
+// RENDER REGISTRO — cards colapsáveis por rodada
+// ════════════════════════════════════════════
+function renderRegistro() {
+  const cfg     = STATE.cfg;
+  const loteQtd = cfg.lote_qtd || 10;
+  const opcA    = cfg.opcao_a || 'Ambos NÃO';
+  const opcB    = cfg.opcao_b || 'Ambos SIM';
+  ensureSeqs();
+
+  const saldo = calcSaldoGlobal();
+  document.getElementById('ladoSugerido').textContent     = cfg.ativo || 'Ativo';
+  document.getElementById('proximaApostaBar').textContent = fmt(saldo);
+
+  const container = document.getElementById('jogosBody');
+  container.innerHTML = '';
+  const maxLotes = Math.max(0, ...STATE.seqs.map(s => s.length));
+
+  if (maxLotes === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--muted);background:#fff;border-radius:14px;border:1px solid var(--border)">
+      <div style="font-size:32px;margin-bottom:10px">🎯</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px">Nenhum jogo registrado ainda</div>
+      <div style="font-size:13px">Use o painel de rodada acima para lançar suas operações</div>
+    </div>`;
+    recalcLoteIndep(); renderLote(); return;
+  }
+
+  let saldoAcum = cfg.capital;
+  for (let loteIdx = 0; loteIdx < maxLotes; loteIdx++) {
+    let wins = 0, losses = 0, lucroLote = 0;
+    const seqResults = [];
+    for (let s = 0; s < loteQtd; s++) {
+      const seq = STATE.seqs[s] || [];
+      const j   = seq[loteIdx];
+      if (!j) { seqResults.push(null); continue; }
+      if (j.wl === 'P') { wins++; lucroLote += j.operação * (cfg.odd - 1); }
+      else if (j.wl === 'N') { lucroLote -= j.operação; losses++; }
+      seqResults.push(j);
+    }
+    saldoAcum += lucroLote;
+    const loteColor = lucroLote > 0 ? '#27ae60' : lucroLote < 0 ? '#c42b1c' : '#0078d4';
+
+    const card = document.createElement('div');
+    card.className = 'hist-rodada-card';
+    card.style.setProperty('--rodada-color', loteColor);
+
+    const header = document.createElement('div');
+    header.className = 'hist-rodada-header';
+    header.innerHTML = `
+      <div class="hist-rodada-num">RODADA #${loteIdx + 1}</div>
+      <div class="hist-rodada-pills">
+        <span class="pill pill-p">✅ ${wins}W</span>
+        <span class="pill pill-n">❌ ${losses}L</span>
+        <span class="pill pill-nuc">${lucroLote >= 0 ? '+' : ''}${fmt(lucroLote)}</span>
+        <span class="pill pill-saldo">Saldo: ${fmt(saldoAcum)}</span>
+      </div>
+      <div class="hist-rodada-toggle ${loteIdx === maxLotes - 1 ? 'open' : ''}" id="toggle-${loteIdx}">▼</div>`;
+    header.onclick = () => toggleLoteCard(loteIdx);
+    card.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'hist-rodada-body' + (loteIdx === maxLotes - 1 ? ' open' : '');
+    body.id = `body-${loteIdx}`;
+
+    const seqGrid = document.createElement('div');
+    seqGrid.className = 'hist-seq-grid';
+
+    seqResults.forEach((j, s) => {
+      const mini = document.createElement('div');
+      mini.className = 'hist-seq-mini';
+      if (!j) {
+        mini.style.setProperty('--sq-color', '#ccc');
+        mini.innerHTML = `<div class="sq-num">SEQ ${s+1}</div><div style="color:var(--muted);font-size:12px">—</div>`;
+      } else {
+        const sqColor  = j.wl === 'P' ? '#27ae60' : j.wl === 'N' ? '#c42b1c' : '#ccc';
+        mini.style.setProperty('--sq-color', sqColor);
+        const streak   = getStreakAt(STATE.seqs[s] || [], loteIdx);
+        const ladoStr  = (j.lado === opcA ? opcA : opcB).substring(0, 9);
+        const resStr   = (j.retorno === opcA ? opcA : j.retorno === opcB ? opcB : '—').substring(0, 9);
+        mini.innerHTML = `
+          <div class="sq-num">SEQ ${s+1} ${streak > 0 ? '🔴'+streak : ''}</div>
+          <div class="sq-wl" style="color:${sqColor}">${j.wl || '—'}</div>
+          <div class="sq-info">${ladoStr} → ${resStr}</div>
+          <div class="sq-info" style="font-family:'DM Mono',monospace;color:#005a9e;font-weight:700">${fmt(j.operação)}</div>`;
+      }
+      seqGrid.appendChild(mini);
+    });
+
+    body.appendChild(seqGrid);
+    card.appendChild(body);
+    container.appendChild(card);
+  }
+  recalcLoteIndep(); renderLote();
+}
+
+function toggleLoteCard(idx) {
+  const body = document.getElementById(`body-${idx}`);
+  const tog  = document.getElementById(`toggle-${idx}`);
+  if (!body) return;
+  body.classList.toggle('open');
+  tog && tog.classList.toggle('open');
+}
+
+function recalcLoteIndep() {
+  const cfg = STATE.cfg;
+  ensureSeqs();
+  LOTE_PENDENTE.forEach((item, i) => {
+    const seq = STATE.seqs[i] || [];
+    if (!item.retorno) {
+      item.operação = +computeProxApostaSeq(seq, cfg).toFixed(2);
+      item.lado   = getLadoSeq(seq, cfg);
+    }
+    item.seq_len = seq.length;
+  });
+}
+
+function resetDia() {
+  if (!confirm('Resetar TODAS as ciclos e começar do zero?\n(O histórico semanal não será afetado)')) return;
+  STATE.seqs     = [];
+  STATE.lote_num = 1;
+  saveState(); ensureSeqs(); initLote(); renderRegistro(); renderPainel();
+  showToast('🗑 Dia resetado!');
+}
+
+function renderHistorico() {
+  const tbody = document.getElementById('histBody');
+  const tfoot = document.getElementById('histFoot');
+  tbody.innerHTML = '';
+  const hist = STATE.historico;
+  if (!hist.length) {
+    tbody.innerHTML = `<tr><td colspan="10" style="color:var(--muted);padding:32px;text-align:center">Nenhum registro ainda. Adicione dias ao histórico acima.</td></tr>`;
+    tfoot.innerHTML = ''; return;
+  }
+  let totalLucro = 0, totalW = 0, totalL = 0, totalJogos = 0;
+  hist.forEach((h, i) => {
+    const rendimento = h.banca_fim - h.banca_ini;
+    const pct   = rendimento / h.banca_ini * 100;
+    const taxa  = h.jogos ? (h.w / h.jogos * 100).toFixed(0) + '%' : '—';
+    totalLucro += rendimento; totalW += h.w||0; totalL += h.l||0; totalJogos += h.jogos||0;
+    const tr = document.createElement('tr');
+    tr.className = rendimento >= 0 ? 'row-pos' : 'row-neg';
+    tr.innerHTML = `
+      <td class="mono">${h.data}</td>
+      <td class="mono">${fmt(h.banca_ini)}</td>
+      <td class="mono">${fmt(h.banca_fim)}</td>
+      <td class="mono" style="color:${rendimento>=0?'var(--accent)':'var(--red)'}">${rendimento>=0?'+':''}${fmt(rendimento)}</td>
+      <td class="mono" style="color:${pct>=0?'var(--accent)':'var(--red)'}">${pct>=0?'+':''}${pct.toFixed(2)}%</td>
+      <td class="mono">${h.jogos||'—'}</td>
+      <td class="mono text-accent">${h.w||'—'}</td>
+      <td class="mono text-red">${h.l||'—'}</td>
+      <td class="mono">${taxa}</td>
+      <td><button onclick="delHistorico(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px">✕</button></td>`;
+    tbody.appendChild(tr);
+  });
+  const bancaIni = hist[0].banca_ini, bancaFim = hist[hist.length-1].banca_fim;
+  const crescimento = (bancaFim - bancaIni) / bancaIni * 100;
+  tfoot.innerHTML = `
+    <tr style="background:var(--surface2)">
+      <td class="mono" style="color:var(--muted);font-weight:700">TOTAL</td>
+      <td class="mono text-muted">${fmt(bancaIni)}</td>
+      <td class="mono text-gold">${fmt(bancaFim)}</td>
+      <td class="mono" style="color:${totalLucro>=0?'var(--accent)':'var(--red)'};font-weight:700">${totalLucro>=0?'+':''}${fmt(totalLucro)}</td>
+      <td class="mono" style="color:${crescimento>=0?'var(--accent)':'var(--red)'};font-weight:700">${crescimento>=0?'+':''}${crescimento.toFixed(2)}%</td>
+      <td class="mono text-muted">${totalJogos}</td>
+      <td class="mono text-accent">${totalW}</td>
+      <td class="mono text-red">${totalL}</td>
+      <td class="mono">${totalJogos?(totalW/totalJogos*100).toFixed(0)+'%':'—'}</td>
+      <td></td>
+    </tr>`;
+}
+function addHistorico() {
+  const data = document.getElementById('histData').value;
+  const ini  = parseFloat(document.getElementById('histBancaInicio').value);
+  const fim  = parseFloat(document.getElementById('histBancaFim').value);
+  const jogos= parseInt(document.getElementById('histJogos').value)||0;
+  const w    = parseInt(document.getElementById('histW').value)||0;
+  const l    = parseInt(document.getElementById('histL').value)||0;
+  if (!data || isNaN(ini) || isNaN(fim)) { showToast('⚠️ Preencha data e bancas!'); return; }
+  STATE.historico.push({ data, banca_ini: ini, banca_fim: fim, jogos, w, l });
+  STATE.historico.sort((a,b) => a.data.localeCompare(b.data));
+  saveState(); renderHistorico();
+  ['histData','histBancaInicio','histBancaFim','histJogos','histW','histL'].forEach(id => document.getElementById(id).value = '');
+  showToast('✅ Dia adicionado ao histórico!');
+}
+function delHistorico(i) { STATE.historico.splice(i,1); saveState(); renderHistorico(); }
+
+// ════════════════════════════════════════════
+// RENDER CONFIG
+// ════════════════════════════════════════════
+function renderConfig() {
+  const c = STATE.cfg;
+  document.getElementById('cfg_banca').value    = c.capital;
+  document.getElementById('cfg_base_pct').value = c.base_pct;
+  document.getElementById('cfg_odd').value      = c.odd;
+  document.getElementById('cfg_meta_pct').value = c.meta_pct;
+  document.getElementById('cfg_limite').value   = c.limite;
+  document.getElementById('cfg_incr').value     = c.incr;
+  document.getElementById('cfg_gatilho').value  = c.gatilho;
+  document.getElementById('cfg_retorno').value  = c.retorno;
+  document.getElementById('cfg_lote_qtd').value = c.lote_qtd || 10;
+  document.getElementById('cfg_mercado').value  = c.ativo  || 'Ambos Marcam';
+  document.getElementById('cfg_opcao_a').value  = c.opcao_a  || 'Ambos NÃO';
+  document.getElementById('cfg_opcao_b').value  = c.opcao_b  || 'Ambos SIM';
+}
+function saveConfig() {
+  const opcA = document.getElementById('cfg_opcao_a').value.trim() || 'Opção A';
+  const opcB = document.getElementById('cfg_opcao_b').value.trim() || 'Opção B';
+  if (opcA === opcB) { showToast('⚠️ As duas opções não podem ser iguais!'); return; }
+  STATE.cfg = {
+    capital:    +document.getElementById('cfg_banca').value    || 1000,
+    base_pct: +document.getElementById('cfg_base_pct').value || 1,
+    odd:      +document.getElementById('cfg_odd').value      || 1.83,
+    meta_pct: +document.getElementById('cfg_meta_pct').value || 3,
+    limite:   +document.getElementById('cfg_limite').value   || 50,
+    incr:     +document.getElementById('cfg_incr').value     || 30,
+    gatilho:  +document.getElementById('cfg_gatilho').value  || 3,
+    retorno:  +document.getElementById('cfg_retorno').value  || 50,
+    lote_qtd: Math.min(20, Math.max(1, +document.getElementById('cfg_lote_qtd').value || 10)),
+    ativo:  document.getElementById('cfg_mercado').value.trim() || 'Ativo',
+    opcao_a:  opcA,
+    opcao_b:  opcB,
+  };
+  saveState(); ensureSeqs(); initLote(); renderPainel();
+  // Atualiza header e título da página
+  document.title = '🎯 ' + STATE.cfg.ativo + ' — Método Marantan';
+  showToast('✅ Salvo! Ativo: ' + STATE.cfg.ativo + ' (' + opcA + ' / ' + opcB + ')');
+}
+function savePwd() {
+  const np = document.getElementById('newPwd').value;
+  const cp = document.getElementById('confirmPwd').value;
+  if (np.length < 3) { showToast('⚠️ Senha deve ter pelo menos 3 caracteres!'); return; }
+  if (np !== cp)     { showToast('⚠️ Senhas não coincidem!'); return; }
+  STATE.pwd = np;
+  document.getElementById('newPwd').value = '';
+  document.getElementById('confirmPwd').value = '';
+  showToast('🔐 Senha alterada com sucesso!');
+}
+
+// ════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════
+function fmt(v) {
+  return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+// ════════════════════════════════════════════
+// BOTÃO PÂNICO — fecha e redireciona
+// ════════════════════════════════════════════
+function panico() {
+  // Esconde o app imediatamente
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'none';
+  // Substitui o conteúdo da página por uma página em branco inócua
+  document.body.innerHTML = '<div style="font-family:Arial,sans-serif;padding:60px;color:#333"><h2>Google</h2><p>Redirecionando...</p></div>';
+  // Redireciona para o Google após limpar a tela
+  setTimeout(() => { window.location.href = 'https://www.google.com'; }, 300);
+}
+
+// Atalho: ESC pressionado 2x em menos de 1 segundo
+let _escCount = 0, _escTimer = null;
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    _escCount++;
+    if (_escCount === 1) {
+      _escTimer = setTimeout(() => { _escCount = 0; }, 1000);
+    }
+    if (_escCount >= 2) {
+      clearTimeout(_escTimer);
+      _escCount = 0;
+      panico();
+    }
+  }
+});
+function toggleDark() {
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('esm_dark', isDark ? '1' : '0');
+  document.getElementById('darkBtn').textContent = isDark ? '☀️ Claro' : '🌙 Escuro';
+}
+function initDarkMode() {
+  if (localStorage.getItem('esm_dark') === '1') {
+    document.body.classList.add('dark-mode');
+    const btn = document.getElementById('darkBtn');
+    if (btn) btn.textContent = '☀️ Claro';
+  }
+}
+
+// ════════════════════════════════════════════
+// ALERTAS VISUAL + SONORO
+// ════════════════════════════════════════════
+let _alertTimer = null;
+function dispararAlerta(tipo, msg) {
+  const banner = document.getElementById('alertBanner');
+  banner.textContent = msg;
+  banner.className   = 'alert-banner ' + tipo + ' show';
+  clearTimeout(_alertTimer);
+  _alertTimer = setTimeout(() => banner.classList.remove('show'), 4500);
+  // Som via Web Audio API
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notas = tipo === 'objetivo'  ? [523, 659, 784, 1047] :
+                  tipo === 'inv'   ? [440, 370, 440]        :
+                                     [330, 280];
+    notas.forEach((freq, i) => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = tipo === 'objetivo' ? 'sine' : 'square';
+      gain.gain.setValueAtTime(0.18, ctx.currentTime + i * 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.25);
+      osc.start(ctx.currentTime + i * 0.15);
+      osc.stop(ctx.currentTime + i * 0.15 + 0.3);
+    });
+  } catch(e) {}
+}
+
+// Verifica alertas após cada confirmação
+function verificarAlertas() {
+  const cfg    = STATE.cfg;
+  const saldo  = calcSaldoGlobal();
+  const rendimento  = saldo - cfg.capital;
+  const pctDia = rendimento / cfg.capital * 100;
+
+  if (pctDia >= cfg.meta_pct) {
+    dispararAlerta('objetivo', '🏆 OBJETIVO ATINGIDA! +' + pctDia.toFixed(1) + '% — Bom trabalho! Considere encerrar o dia.');
+    return;
+  }
+  // Verifica inversões em qualquer ciclo
+  STATE.seqs.forEach((seq, i) => {
+    const streak = getStreak(seq);
+    if (streak === cfg.gatilho) {
+      dispararAlerta('inv', `🔄 INVERSÃO! Seq ${i+1} atingiu ${streak} negativos — Troque o lado!`);
+    }
+  });
+  // Alerta de stop loss (perda > 10% da capital)
+  if (pctDia <= -10) {
+    dispararAlerta('stop', '⛔ ATENÇÃO! Perda de ' + Math.abs(pctDia).toFixed(1) + '% — Considere parar por hoje.');
+  }
+}
+
+// ════════════════════════════════════════════
+// MODAL HELPERS
+// ════════════════════════════════════════════
+function abrirModal(id)  { document.getElementById(id).classList.add('open'); }
+function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Fecha modal ao clicar fora
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+  });
+});
+
+// ════════════════════════════════════════════
+// RESUMO DO DIA
+// ════════════════════════════════════════════
+function abrirResumo() {
+  const cfg    = STATE.cfg;
+  const saldo  = calcSaldoGlobal();
+  const rendimento  = saldo - cfg.capital;
+  const pctDia = rendimento / cfg.capital * 100;
+  let totalW = 0, totalL = 0, totalJogos = 0;
+  STATE.seqs.forEach(seq => {
+    seq.forEach(j => {
+      if (j.wl === 'P') totalW++;
+      else if (j.wl === 'N') totalL++;
+    });
+  });
+  totalJogos = totalW + totalL;
+  const taxa = totalJogos ? (totalW / totalJogos * 100).toFixed(0) : 0;
+  const maxLotes = Math.max(0, ...STATE.seqs.map(s => s.length));
+
+  document.getElementById('resumoData').textContent =
+    new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+
+  document.getElementById('resumoKpis').innerHTML = `
+    <div class="resumo-kpi"><div class="resumo-kpi-label">Capital Inicial</div><div class="resumo-kpi-val">${fmt(cfg.capital)}</div></div>
+    <div class="resumo-kpi"><div class="resumo-kpi-label">Capital Final</div><div class="resumo-kpi-val" style="color:${rendimento>=0?'#27ae60':'var(--red)'}">${fmt(saldo)}</div></div>
+    <div class="resumo-kpi"><div class="resumo-kpi-label">Rendimento / Perda</div><div class="resumo-kpi-val" style="color:${rendimento>=0?'#27ae60':'var(--red)'}">${rendimento>=0?'+':''}${fmt(rendimento)}</div></div>
+    <div class="resumo-kpi"><div class="resumo-kpi-label">% do Dia</div><div class="resumo-kpi-val" style="color:${pctDia>=0?'#27ae60':'var(--red)'}">${pctDia>=0?'+':''}${pctDia.toFixed(2)}%</div></div>
+    <div class="resumo-kpi"><div class="resumo-kpi-label">Positivos</div><div class="resumo-kpi-val" style="color:#27ae60">${totalW}</div></div>
+    <div class="resumo-kpi"><div class="resumo-kpi-label">Negativos</div><div class="resumo-kpi-val" style="color:var(--red)">${totalL}</div></div>
+    <div class="resumo-kpi"><div class="resumo-kpi-label">Total Jogos</div><div class="resumo-kpi-val">${totalJogos}</div></div>
+    <div class="resumo-kpi"><div class="resumo-kpi-label">Taxa de Sucesso</div><div class="resumo-kpi-val">${taxa}%</div></div>`;
+
+  // Rodadas
+  let lotesHtml = '', saldoAcum = cfg.capital;
+  for (let l = 0; l < maxLotes; l++) {
+    let lw = 0, ll = 0, lucL = 0;
+    STATE.seqs.forEach(seq => {
+      const j = seq[l];
+      if (!j) return;
+      if (j.wl === 'P') { lw++; lucL += j.operação * (cfg.odd - 1); }
+      else if (j.wl === 'N') { ll++; lucL -= j.operação; }
+    });
+    saldoAcum += lucL;
+    lotesHtml += `<div class="modal-row">
+      <span>Rodada #${l+1}</span>
+      <span>✅${lw} ❌${ll}</span>
+      <strong style="color:${lucL>=0?'#27ae60':'var(--red)'}">${lucL>=0?'+':''}${fmt(lucL)}</strong>
+      <span style="font-size:11px;color:var(--muted)">${fmt(saldoAcum)}</span>
+    </div>`;
+  }
+  document.getElementById('resumoLotes').innerHTML = lotesHtml || '<div style="color:var(--muted);font-size:13px;padding:10px">Nenhum rodada registrado hoje.</div>';
+  abrirModal('modalResumo');
+}
+
+function registrarDiaDoResumo() {
+  const cfg   = STATE.cfg;
+  const saldo = calcSaldoGlobal();
+  let totalW = 0, totalL = 0, totalJogos = 0;
+  STATE.seqs.forEach(seq => seq.forEach(j => {
+    if (j.wl === 'P') totalW++; else if (j.wl === 'N') totalL++;
+  }));
+  totalJogos = totalW + totalL;
+  const hoje = new Date().toISOString().slice(0, 10);
+  // Verifica se já existe registro hoje
+  const jaExiste = STATE.historico.find(h => h.data === hoje);
+  if (jaExiste) {
+    if (!confirm('Já existe um registro para hoje. Deseja sobrescrever?')) return;
+    STATE.historico = STATE.historico.filter(h => h.data !== hoje);
+  }
+  STATE.historico.push({ data: hoje, banca_ini: cfg.capital, banca_fim: +saldo.toFixed(2), jogos: totalJogos, w: totalW, l: totalL });
+  STATE.historico.sort((a,b) => a.data.localeCompare(b.data));
+  saveState();
+  fecharModal('modalResumo');
+  showToast('✅ Dia registrado no Histórico!');
+}
+
+// ════════════════════════════════════════════
+// EXPORTAR CSV
+// ════════════════════════════════════════════
+function exportarCSV() {
+  const cfg = STATE.cfg;
+  const maxLotes = Math.max(0, ...STATE.seqs.map(s => s.length));
+  let csv = 'Rodada,Ciclo,Lado,Retorno,P/N,Operação (R$),Rendimento (R$)\n';
+  for (let l = 0; l < maxLotes; l++) {
+    STATE.seqs.forEach((seq, s) => {
+      const j = seq[l];
+      if (!j) return;
+      const rendimento = j.wl === 'P' ? j.operação * (cfg.odd - 1) : j.wl === 'N' ? -j.operação : 0;
+      csv += `${l+1},${s+1},"${j.lado}","${j.retorno}",${j.wl},${j.operação.toFixed(2)},${rendimento.toFixed(2)}\n`;
+    });
+  }
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'esports_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('📄 CSV exportado!');
+}
+
+// ════════════════════════════════════════════
+// EXPORTAR PDF (via impressão)
+// ════════════════════════════════════════════
+function exportarPDF() {
+  const cfg    = STATE.cfg;
+  const saldo  = calcSaldoGlobal();
+  const rendimento  = saldo - cfg.capital;
+  const pctDia = (rendimento / cfg.capital * 100).toFixed(2);
+  const hoje   = new Date().toLocaleDateString('pt-BR');
+  const maxLotes = Math.max(0, ...STATE.seqs.map(s => s.length));
+  let tabelaHTML = '';
+  let saldoAcum = cfg.capital;
+  for (let l = 0; l < maxLotes; l++) {
+    let lw = 0, ll = 0, lucL = 0;
+    STATE.seqs.forEach(seq => {
+      const j = seq[l];
+      if (!j) return;
+      if (j.wl === 'P') { lw++; lucL += j.operação*(cfg.odd-1); }
+      else if (j.wl === 'N') { ll++; lucL -= j.operação; }
+    });
+    saldoAcum += lucL;
+    tabelaHTML += `<tr style="background:${lucL>=0?'#e8f8f0':'#fdf0ef'}">
+      <td style="padding:6px 10px;border:1px solid #ddd;font-weight:700">#${l+1}</td>
+      <td style="padding:6px 10px;border:1px solid #ddd;color:#27ae60">✅ ${lw}W</td>
+      <td style="padding:6px 10px;border:1px solid #ddd;color:#c42b1c">❌ ${ll}L</td>
+      <td style="padding:6px 10px;border:1px solid #ddd;font-weight:700;color:${lucL>=0?'#27ae60':'#c42b1c'}">${lucL>=0?'+':''}R$ ${Math.abs(lucL).toFixed(2)}</td>
+      <td style="padding:6px 10px;border:1px solid #ddd">R$ ${saldoAcum.toFixed(2)}</td>
+    </tr>`;
+  }
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><objetivo charset="UTF-8">
+    <title>Resumo ${hoje}</title>
+    <style>body{font-family:Arial,sans-serif;padding:32px;color:#1a1a1a}
+    h1{color:#0078d4;margin-bottom:4px}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0}
+    .kpi{background:#f0f7ff;border-radius:8px;padding:12px;text-align:center}
+    .kpi-label{font-size:11px;color:#666;margin-bottom:4px}
+    .kpi-val{font-size:18px;font-weight:700;color:#0078d4}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th{background:#0078d4;color:#fff;padding:8px 10px;text-align:left;font-size:13px}
+    @media print{body{padding:16px}}</style></head><body>
+    <h1>🎯 Método Marantan — Resumo do Dia</h1>
+    <p style="color:#666">${hoje} · Ativo: ${cfg.ativo || 'Ambos Marcam'}</p>
+    <div class="grid">
+      <div class="kpi"><div class="kpi-label">Capital Inicial</div><div class="kpi-val">R$ ${cfg.capital.toFixed(2)}</div></div>
+      <div class="kpi"><div class="kpi-label">Capital Final</div><div class="kpi-val" style="color:${rendimento>=0?'#27ae60':'#c42b1c'}">R$ ${saldo.toFixed(2)}</div></div>
+      <div class="kpi"><div class="kpi-label">Rendimento/Perda</div><div class="kpi-val" style="color:${rendimento>=0?'#27ae60':'#c42b1c'}">${rendimento>=0?'+':''}R$ ${Math.abs(rendimento).toFixed(2)}</div></div>
+      <div class="kpi"><div class="kpi-label">% do Dia</div><div class="kpi-val" style="color:${rendimento>=0?'#27ae60':'#c42b1c'}">${rendimento>=0?'+':''}${pctDia}%</div></div>
+    </div>
+    <table><thead><tr><th>Rodada</th><th>Positivos</th><th>Negativos</th><th>Rendimento/Prej.</th><th>Saldo Acum.</th></tr></thead>
+    <tbody>${tabelaHTML}</tbody></table>
+    <p style="margin-top:24px;font-size:11px;color:#aaa">Gerado em ${new Date().toLocaleString('pt-BR')}</p>
+    <script>window.onload=()=>window.print()<\/script></body></html>`);
+  win.document.close();
+  showToast('🖨️ PDF pronto para impressão!');
+}
+
+// ════════════════════════════════════════════
+// BACKUP & RESTAURAR
+// ════════════════════════════════════════════
+function abrirBackup() {
+  const dados = {
+    versao: '2.0',
+    data: new Date().toISOString(),
+    cfg: STATE.cfg,
+    seqs: STATE.seqs,
+    historico: STATE.historico,
+    lote_num: STATE.lote_num,
+  };
+  document.getElementById('backupExportArea').value = JSON.stringify(dados, null, 2);
+  document.getElementById('backupImportArea').value = '';
+  abrirModal('modalBackup');
+}
+function copiarBackup() {
+  const area = document.getElementById('backupExportArea');
+  area.select(); document.execCommand('copy');
+  showToast('📋 Backup copiado!');
+}
+function baixarBackup() {
+  const dados = document.getElementById('backupExportArea').value;
+  const blob  = new Blob([dados], {type:'application/json'});
+  const url   = URL.createObjectURL(blob);
+  const a     = document.createElement('a');
+  a.href = url; a.download = 'backup_esports_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('⬇️ Backup baixado!');
+}
+function restaurarBackup() {
+  const txt = document.getElementById('backupImportArea').value.trim();
+  if (!txt) { showToast('⚠️ Cole o backup antes de restaurar!'); return; }
+  try {
+    const dados = JSON.parse(txt);
+    if (!dados.cfg || !dados.seqs) throw new Error('Formato inválido');
+    if (!confirm('Isso vai SOBRESCREVER todos os dados atuais. Confirma?')) return;
+    STATE.cfg       = dados.cfg;
+    STATE.seqs      = dados.seqs;
+    STATE.historico = dados.historico || [];
+    STATE.lote_num  = dados.lote_num  || 1;
+    saveState();
+    fecharModal('modalBackup');
+    renderAll();
+    showToast('✅ Dados restaurados com sucesso!');
+  } catch(e) {
+    showToast('❌ Backup inválido. Verifique o conteúdo.');
+  }
+}
+
+// ════════════════════════════════════════════
+// RENDER ALL — atualizado
+// ════════════════════════════════════════════
+function renderAll() {
+  ensureSeqs(); renderPainel(); renderConfig(); initLote(); initDarkMode();
+}
+document.getElementById('histData').valueAsDate = new Date();
+
+// ════════════════════════════════════════════
+// GRÁFICO — CRESCIMENTO REAL vs PROJEÇÃO
+// ════════════════════════════════════════════
+let _chartInstance = null;
+function renderGrafico() {
+  const cfg = STATE.cfg, hist = STATE.historico, metaPct = cfg.meta_pct / 100;
+  const histOrdenado = [...hist].sort((a,b) => a.data.localeCompare(b.data));
+  const bancaInicial = histOrdenado.length > 0 ? histOrdenado[0].banca_ini : cfg.capital;
+  const dataInicio   = histOrdenado.length > 0 ? new Date(histOrdenado[0].data + 'T00:00:00') : new Date();
+  const diasReais    = histOrdenado.length;
+  const pontosReais  = [bancaInicial];
+  histOrdenado.forEach(h => pontosReais.push(h.banca_fim));
+
+  const DIAS = 100;
+  const labelsX = [], pMeta = [], pOtim = [], pCons = [];
+  for (let d = 0; d <= DIAS; d++) {
+    const dl = new Date(dataInicio); dl.setDate(dl.getDate() + d);
+    labelsX.push(dl.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}));
+    pMeta.push(+(bancaInicial * Math.pow(1 + metaPct,       d)).toFixed(2));
+    pOtim.push(+(bancaInicial * Math.pow(1 + metaPct * 1.5, d)).toFixed(2));
+    pCons.push(+(bancaInicial * Math.pow(1 + metaPct * 0.5, d)).toFixed(2));
+  }
+
+  const bancaAtual = pontosReais[pontosReais.length - 1];
+  const projDia    = pMeta[Math.min(diasReais, DIAS)] || bancaInicial;
+  const dif        = bancaAtual - projDia;
+  const difP       = (dif / projDia * 100);
+
+  document.getElementById('gBancaInicial').textContent  = fmt(bancaInicial);
+  document.getElementById('gDataInicio').textContent    = dataInicio.toLocaleDateString('pt-BR');
+  document.getElementById('gDiasReais').textContent     = diasReais;
+  document.getElementById('gMeta100').textContent       = fmt(pMeta[DIAS]);
+  document.getElementById('gMeta100pct').innerHTML      = `com <span>${cfg.meta_pct}</span>%/dia`;
+  document.getElementById('gLegendaMeta').textContent   = cfg.meta_pct;
+  document.getElementById('gBancaAtual').textContent    = diasReais > 0 ? fmt(bancaAtual) : '—';
+  document.getElementById('gDiferencaMeta').textContent = diasReais > 0
+    ? (dif >= 0 ? '▲ +' : '▼ ') + fmt(Math.abs(dif)) + ' (' + (difP >= 0 ? '+' : '') + difP.toFixed(1) + '%)'
+    : 'sem dados ainda';
+  document.getElementById('gDiferencaMeta').style.color = dif >= 0 ? '#27ae60' : 'var(--red)';
+
+  const chkP = document.getElementById('chkProjecao').checked;
+  const chkO = document.getElementById('chkCenarioOtimista').checked;
+  const chkC = document.getElementById('chkCenarioConservador').checked;
+  const dadosR = labelsX.map((_, i) => i < pontosReais.length ? pontosReais[i] : null);
+
+  const datasets = [{
+    label: '🔵 Real', data: dadosR,
+    borderColor: '#0078d4', backgroundColor: 'rgba(0,120,212,0.08)',
+    borderWidth: 3,
+    pointRadius: dadosR.map((v,i) => v!==null&&(i===0||dadosR[i+1]===null||dadosR[i+1]===undefined)?6:v!==null?3:0),
+    pointBackgroundColor: '#0078d4',
+    fill: false, tension: 0.3, spanGaps: false, order: 1,
+  }];
+  if (chkP) datasets.push({ label:'🟢 Projeção Objetivo ('+cfg.meta_pct+'%/dia)', data:pMeta, borderColor:'#27ae60', backgroundColor:'rgba(39,174,96,0.05)', borderWidth:2, borderDash:[6,4], pointRadius:0, fill:false, tension:0.3, order:2 });
+  if (chkO) datasets.push({ label:'🟡 Cenário +50% da objetivo', data:pOtim, borderColor:'#c7760a', backgroundColor:'transparent', borderWidth:1.5, borderDash:[3,5], pointRadius:0, fill:false, tension:0.3, order:3 });
+  if (chkC) datasets.push({ label:'🔴 Cenário -50% da objetivo', data:pCons, borderColor:'#c42b1c', backgroundColor:'transparent', borderWidth:1.5, borderDash:[3,5], pointRadius:0, fill:false, tension:0.3, order:4 });
+
+  const ctx = document.getElementById('graficoCrescimento').getContext('2d');
+  if (_chartInstance) { _chartInstance.destroy(); _chartInstance = null; }
+  _chartInstance = new Chart(ctx, {
+    type: 'line', data: { labels: labelsX, datasets },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins: {
+        legend:{ position:'top', labels:{ font:{family:'DM Sans',size:12}, color:'#6e6e6e', usePointStyle:true, padding:16 } },
+        tooltip:{
+          backgroundColor:'#fff', borderColor:'#d0d0d0', borderWidth:1,
+          titleColor:'#1a1a1a', bodyColor:'#1a1a1a',
+          titleFont:{family:'Syne',size:12,weight:'bold'}, bodyFont:{family:'DM Mono',size:12}, padding:14,
+          callbacks:{
+            title: c => 'Dia '+c[0].dataIndex+' — '+c[0].label,
+            label: c => { if(c.raw===null)return null; return '  '+c.dataset.label.replace(/[🔵🟢🟡🔴]\s/,'')+': R$ '+c.raw.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); },
+            afterBody: c => {
+              const d2=c[0].dataIndex;
+              if(d2>0&&d2<pontosReais.length){
+                const dv=pontosReais[d2]-pMeta[d2], pc=(dv/pMeta[d2]*100).toFixed(1);
+                return['','  Δ vs objetivo:'+(dv>=0?'+':'')+'R$ '+Math.abs(dv).toLocaleString('pt-BR',{minimumFractionDigits:2})+' ('+(dv>=0?'+':'')+pc+'%)'];
+              } return [];
+            }
+          }
+        },
+      },
+      scales:{
+        x:{ grid:{color:'rgba(0,0,0,0.05)'}, ticks:{font:{family:'DM Mono',size:10},color:'#9e9e9e',maxTicksLimit:20,maxRotation:45} },
+        y:{ grid:{color:'rgba(0,0,0,0.05)'}, ticks:{font:{family:'DM Mono',size:11},color:'#9e9e9e',
+          callback: v=>'R$ '+(v>=1000?(v/1000).toLocaleString('pt-BR',{minimumFractionDigits:1})+'k':v.toLocaleString('pt-BR',{minimumFractionDigits:0}))
+        }}
+      }
+    }
+  });
+
+  // Tabela marcos
+  const tbody = document.getElementById('tabelaProjecao');
+  tbody.innerHTML = '';
+  [0,10,20,30,40,50,60,70,80,90,100].forEach(dia => {
+    const dm = new Date(dataInicio); dm.setDate(dm.getDate()+dia);
+    const rv = pontosReais[dia]!==undefined ? pontosReais[dia] : null;
+    const mv = pMeta[dia];
+    const df = rv!==null ? rv-mv : null;
+    const dfP= df!==null ? (df/mv*100).toFixed(1) : null;
+    const tr = document.createElement('tr');
+    if(rv!==null) tr.className = df>=0?'row-pos':'row-neg';
+    tr.innerHTML = `
+      <td class="mono" style="font-weight:700;color:var(--accent)">Dia ${dia}</td>
+      <td class="mono">${dm.toLocaleDateString('pt-BR')}</td>
+      <td class="mono" style="color:#27ae60;font-weight:700">${fmt(mv)}</td>
+      <td class="mono" style="color:var(--gold)">${fmt(pOtim[dia])}</td>
+      <td class="mono" style="color:var(--red)">${fmt(pCons[dia])}</td>
+      <td class="mono" style="font-weight:700;color:var(--accent)">${rv!==null?fmt(rv):'—'}</td>
+      <td class="mono" style="color:${df===null?'var(--muted)':df>=0?'#27ae60':'var(--red)'}">
+        ${df!==null?(df>=0?'▲ +':'▼ ')+fmt(Math.abs(df))+' ('+(df>=0?'+':'')+dfP+'%)':'—'}
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderAll() {
+  ensureSeqs(); renderPainel(); renderConfig(); initLote(); initDarkMode();
+}
+document.getElementById('histData').valueAsDate = new Date();
+</script>
+</body>
+</html>
