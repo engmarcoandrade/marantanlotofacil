@@ -6,98 +6,203 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Loto Fácil</title>
 <style>
+  /* ================= TOKENS ================= */
   :root{
-    --bg:#f3f3f3; --card:#ffffff; --txt:#111111; --sub:#555555; --brd:#d9d9d9;
-    --acc:#930089; --acc2:#6b0064; --acctxt:#ffffff;
-    --ok:#107c10; --okbg:#dff6dd; --warn:#8a5300; --warnbg:#fff4ce; --neg:#c42b1c;
-    --chip:#efefef; --hit:#930089; --hittxt:#ffffff; --rowp:#f8ebf7; --head:#fafafa;
+    --canvas:#f4f2f7; --paper:#ffffff; --ink:#1f1b24; --muted:#6c6575;
+    --line:#e6e2ec; --line2:#d4cedc;
+    --acc:#930089; --acc-ink:#ffffff; --acc-soft:#f8ebf7; --acc-line:#e7c4e4;
+    --ok:#18794e; --ok-soft:#e4f4ec; --neg:#c42b1c; --neg-soft:#fbeae8;
+    --warn:#8a5a00; --warn-soft:#fdf3dc;
+    --cell:#f1eef5; --cell-ink:#6c6575; --miss:#d9d4e0;
+    --shadow:0 1px 2px rgba(45,20,55,.05), 0 6px 20px rgba(45,20,55,.05);
+    --r-lg:14px; --r-md:10px; --r-sm:7px;
   }
   body.dark{
-    --bg:#1b1b1b; --card:#262626; --txt:#f2f2f2; --sub:#b5b5b5; --brd:#3a3a3a;
-    --acc:#d65ccf; --acc2:#e98fe4; --acctxt:#111111;
-    --ok:#6ccb5f; --okbg:#1f3a1d; --warn:#fce100; --warnbg:#3d3510; --neg:#ff6b5b;
-    --chip:#333333; --hit:#d65ccf; --hittxt:#111111; --rowp:#3a2238; --head:#2e2e2e;
+    --canvas:#16131a; --paper:#211d26; --ink:#f1edf5; --muted:#a8a0b2;
+    --line:#332d3a; --line2:#463f4e;
+    --acc:#e06ad8; --acc-ink:#1c0f1b; --acc-soft:#36203a; --acc-line:#5e3559;
+    --ok:#5fd39a; --ok-soft:#163326; --neg:#ff7a6b; --neg-soft:#3a1c19;
+    --warn:#f5c451; --warn-soft:#3a2f14;
+    --cell:#2b2631; --cell-ink:#9a92a5; --miss:#4a4352;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
   }
+
+  /* ================= BASE ================= */
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
-  body{background:var(--bg);color:var(--txt);font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.4}
-  .num,.mono{font-family:'Courier New',Courier,monospace;font-weight:700}
-  button{font-family:inherit;font-size:14px;cursor:pointer;border-radius:6px;border:1px solid var(--brd);background:var(--card);color:var(--txt);padding:8px 14px}
-  button:hover{filter:brightness(0.95)}
-  button.pri{background:var(--acc);border-color:var(--acc);color:var(--acctxt);font-weight:700}
-  button.danger{background:#c42b1c;border-color:#c42b1c;color:#fff;font-weight:700}
-  button.ghost{background:transparent}
-  button:disabled{opacity:.55;cursor:wait}
-  input{font-family:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--brd);border-radius:6px;background:var(--card);color:var(--txt)}
-  input:focus{outline:2px solid var(--acc);outline-offset:0}
+  body{background:var(--canvas);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  .num{font-family:'Courier New',Courier,monospace;font-weight:700;letter-spacing:-.02em}
   [hidden]{display:none !important}
+  h1,h2,h3,p{margin:0}
 
-  /* LOCK */
+  button{font:inherit;font-size:14px;cursor:pointer;border-radius:var(--r-sm);border:1px solid var(--line2);background:var(--paper);color:var(--ink);padding:9px 15px;transition:background .15s,border-color .15s,color .15s}
+  button:hover{border-color:var(--acc-line);background:var(--acc-soft)}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+  button:disabled{opacity:.55;cursor:wait}
+  .btn-pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:700}
+  .btn-pri:hover{background:var(--acc);border-color:var(--acc);filter:brightness(1.08)}
+  .btn-danger{background:#c42b1c;border-color:#c42b1c;color:#fff;font-weight:700}
+  .btn-danger:hover{background:#a8231a;border-color:#a8231a}
+  .btn-quiet{border-color:transparent;background:transparent}
+  .btn-icon{padding:6px 9px;border-color:transparent;background:transparent;color:var(--muted)}
+  .btn-icon:hover{color:var(--neg);background:var(--neg-soft);border-color:transparent}
+
+  input,select{font:inherit;font-size:15px;padding:9px 11px;border:1px solid var(--line2);border-radius:var(--r-sm);background:var(--paper);color:var(--ink);min-width:0}
+  input[type=number]{font-family:'Courier New',Courier,monospace;font-weight:700}
+  label.field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
+
+  /* ================= MARCA (volante 5x5 do grupo de 20) ================= */
+  .mark{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;width:26px;height:26px;flex:none}
+  .mark i{border-radius:50%;background:var(--line2)}
+  .mark i.on{background:var(--acc)}
+  .mark.big{width:56px;height:56px;gap:4px}
+
+  /* ================= TELA DE SENHA ================= */
   #lock{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
-  .lockcard{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:28px 24px;width:100%;max-width:340px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.06)}
-  .lockcard h1{margin:0 0 4px;font-size:22px;color:var(--acc)}
-  .lockcard p{margin:0 0 18px;color:var(--sub);font-size:13px}
-  .lockcard input{width:100%;text-align:center;font-size:18px;letter-spacing:4px;margin-bottom:12px}
-  .lockcard button{width:100%}
-  .err{color:var(--neg);font-size:13px;min-height:18px;margin-top:10px}
+  .lockcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:36px 28px 28px;width:100%;max-width:360px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;text-align:center}
+  .lockcard h1{font-size:26px;margin:18px 0 4px;letter-spacing:-.01em}
+  .lockcard p{color:var(--muted);font-size:14px;margin-bottom:24px}
+  .lockcard input{width:100%;text-align:center;font-size:20px;letter-spacing:6px;margin-bottom:12px;padding:12px}
+  .lockcard input::placeholder{letter-spacing:normal;font-size:16px}
+  .lockcard button{width:100%;padding:12px}
+  .err{color:var(--neg);font-size:13px;min-height:18px;margin-top:12px;line-height:1.4}
 
-  /* APP */
-  header{background:var(--card);border-bottom:1px solid var(--brd);padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
-  header h1{margin:0;font-size:18px;color:var(--acc);flex:1;min-width:150px}
-  nav{display:flex;gap:4px;padding:10px 16px 0;flex-wrap:wrap;max-width:1100px;margin:0 auto}
-  nav button{border-radius:6px 6px 0 0;border-bottom:none;background:transparent;color:var(--sub)}
-  nav button.on{background:var(--card);color:var(--acc);font-weight:700;border-color:var(--brd)}
-  main{max-width:1100px;margin:0 auto;padding:0 16px 40px}
-  .card{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:16px;margin-top:14px}
-  .card h2{margin:0 0 12px;font-size:16px}
+  /* ================= CABEÇALHO E ABAS ================= */
+  header{background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  .bar{max-width:1080px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:10px}
+  .brand{display:flex;align-items:center;gap:11px;flex:1;min-width:0}
+  .brand h1{font-size:19px;letter-spacing:-.01em;white-space:nowrap}
+  nav{max-width:1080px;margin:0 auto;padding:0 16px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+  nav::-webkit-scrollbar{display:none}
+  nav button{border:none;border-radius:0;background:transparent;color:var(--muted);padding:10px 14px 12px;border-bottom:3px solid transparent;white-space:nowrap;font-size:14px}
+  nav button:hover{background:transparent;color:var(--ink)}
+  nav button.on{color:var(--acc);border-bottom-color:var(--acc);font-weight:700}
+
+  main{max-width:1080px;margin:0 auto;padding:20px 16px 56px;display:flex;flex-direction:column;gap:16px}
+  section{display:flex;flex-direction:column;gap:16px}
+
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow)}
+  .panel > h2{font-size:17px;margin-bottom:4px}
+  .panel > .lead{color:var(--muted);font-size:14px;margin-bottom:16px}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .muted{color:var(--sub);font-size:13px}
-  .badge{display:inline-block;padding:3px 9px;border-radius:12px;font-size:12px;font-weight:700}
-  .b-ok{background:var(--okbg);color:var(--ok)}
-  .b-warn{background:var(--warnbg);color:var(--warn)}
-  .b-acc{background:var(--acc);color:var(--acctxt)}
+  .muted{color:var(--muted);font-size:13px}
 
-  .balls{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
-  .ball{width:36px;height:36px;border-radius:50%;background:var(--acc);color:var(--acctxt);display:flex;align-items:center;justify-content:center;font-family:'Courier New',monospace;font-weight:700;font-size:15px}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:700;white-space:nowrap}
+  .b-ok{background:var(--ok-soft);color:var(--ok)}
+  .b-warn{background:var(--warn-soft);color:var(--warn)}
+  .b-acc{background:var(--acc-soft);color:var(--acc)}
+  .b-mut{background:var(--cell);color:var(--muted)}
 
-  .sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:12px 0}
-  .sum div{border:1px solid var(--brd);border-radius:6px;padding:8px 10px;background:var(--head)}
-  .sum small{display:block;color:var(--sub);font-size:12px}
-  .sum b{font-family:'Courier New',monospace;font-size:20px}
+  /* ================= VOLANTES ================= */
+  .vol{display:grid;grid-template-columns:repeat(5,var(--c));gap:var(--g);--c:22px;--g:4px}
+  .vol span{width:var(--c);height:var(--c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Courier New',Courier,monospace;font-weight:700;font-size:calc(var(--c)*.46);color:var(--cell-ink);background:var(--cell);user-select:none}
+  .vol span.mk{background:var(--miss);color:var(--ink)}
+  .vol span.hit{background:var(--acc);color:var(--acc-ink)}
+  .vol span.drawn{background:transparent;box-shadow:inset 0 0 0 2px var(--acc);color:var(--acc)}
+  .vol.cmp span:not(.mk):not(.hit):not(.drawn){background:transparent}
+  .vol.lg{--c:46px;--g:7px}
+  .vol.lg span{font-size:17px}
 
+  /* ================= RESULTADO ================= */
+  .hero{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center}
+  .hero-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .hero-head h2{font-size:22px;letter-spacing:-.01em}
+  .hero-meta{color:var(--muted);font-size:13.5px;margin-top:4px}
+  .verdict{margin:18px 0 6px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .verdict .big{font-family:'Courier New',Courier,monospace;font-weight:700;font-size:56px;line-height:1;letter-spacing:-.04em;color:var(--ink)}
+  .verdict.win .big{color:var(--acc)}
+  .verdict .lbl{font-size:16px;color:var(--muted)}
+  .faixas{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:18px 0 14px}
+  .faixas div{border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 10px;text-align:center}
+  .faixas div.got{border-color:var(--acc-line);background:var(--acc-soft)}
+  .faixas small{display:block;font-size:12px;color:var(--muted)}
+  .faixas b{font-family:'Courier New',Courier,monospace;font-size:22px}
+  .faixas div.got b{color:var(--acc)}
+  .hero-foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .total{font-size:14px;color:var(--muted)}
+  .total b{font-family:'Courier New',Courier,monospace;font-size:18px;color:var(--ink)}
+
+  .games{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px}
+  .game{border:1px solid var(--line);border-radius:var(--r-md);padding:12px;display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--paper)}
+  .game.prem{border-color:var(--acc-line);background:var(--acc-soft)}
+  .game header{all:unset;display:flex;justify-content:space-between;align-items:baseline;width:100%}
+  .game header span{font-size:13px;color:var(--muted)}
+  .game header b{font-family:'Courier New',Courier,monospace;font-size:18px}
+  .game.prem header b{color:var(--acc)}
+  .game header b small{font-family:Arial,sans-serif;font-size:11px;font-weight:400;color:var(--muted);margin-left:3px}
+
+  .empty{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  .empty .txt{flex:1;min-width:220px}
+  .empty h2{font-size:20px;margin-bottom:6px;letter-spacing:-.01em}
+  .empty p{color:var(--muted);font-size:14px;margin-bottom:16px;max-width:52ch}
+
+  .search{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .search input{width:130px}
+
+  /* manual */
+  .pick{display:grid;grid-template-columns:repeat(5,48px);gap:7px}
+  .pick button{padding:0;height:48px;border-radius:50%;font-family:'Courier New',Courier,monospace;font-weight:700;font-size:16px;background:var(--cell);border-color:transparent;color:var(--muted)}
+  .pick button:hover{background:var(--acc-soft);color:var(--acc)}
+  .pick button.sel{background:var(--acc);color:var(--acc-ink)}
+  .manual{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start}
+  .counter{font-family:'Courier New',Courier,monospace;font-weight:700;font-size:36px;line-height:1}
+  .counter small{font-size:16px;color:var(--muted)}
+
+  /* ================= TABELAS ================= */
+  .tablewrap{overflow-x:auto;margin:0 -4px}
   table{width:100%;border-collapse:collapse;font-size:14px}
-  th,td{padding:7px 8px;border-bottom:1px solid var(--brd);text-align:left;vertical-align:middle}
-  th{background:var(--head);font-size:12px;color:var(--sub);font-weight:700}
+  th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+  th{font-size:12.5px;color:var(--muted);font-weight:700;border-bottom-color:var(--line2)}
+  tbody tr:last-child td{border-bottom:none}
   td.r,th.r{text-align:right}
-  tr.prem td{background:var(--rowp)}
-  .tablewrap{overflow-x:auto}
-
-  .chips{display:flex;flex-wrap:wrap;gap:3px}
-  .chip{min-width:27px;padding:3px 0;text-align:center;border-radius:4px;background:var(--chip);font-family:'Courier New',monospace;font-weight:700;font-size:13px}
-  .chip.hit{background:var(--hit);color:var(--hittxt)}
-
-  .grid25{display:grid;grid-template-columns:repeat(5,48px);gap:6px;margin:10px 0}
-  .grid25 button{padding:0;height:42px;font-family:'Courier New',monospace;font-weight:700;font-size:16px}
-  .grid25 button.sel{background:var(--acc);border-color:var(--acc);color:var(--acctxt)}
-
+  td.num{white-space:nowrap}
+  tr.prem td{background:var(--acc-soft)}
   .neg{color:var(--neg)}
-  .pos{color:var(--ok)}
-  .formfin{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;align-items:end}
-  .formfin label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--sub)}
+
+  /* ================= FINANCEIRO ================= */
+  .saldo{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:12px}
+  .saldo > div{border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px}
+  .saldo small{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  .saldo b{font-family:'Courier New',Courier,monospace;font-size:21px;letter-spacing:-.02em}
+  .saldo .main{background:var(--cell);border-color:transparent}
+  .saldo .main b{font-size:32px}
+  .formfin{display:grid;grid-template-columns:140px 170px 130px 1fr 140px;gap:10px;align-items:end}
   .formfin input,.formfin select{width:100%}
-  select{font-family:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--brd);border-radius:6px;background:var(--card);color:var(--txt)}
-  .chk{display:flex;align-items:center;gap:6px;font-size:13px;margin-top:10px}
+  .chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:14px;color:var(--muted)}
+  .chk input{width:17px;height:17px;accent-color:var(--acc)}
 
-  #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#333;color:#fff;padding:10px 16px;border-radius:6px;font-size:14px;max-width:92vw;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.3)}
-  #toast.erro{background:#c42b1c}
-  #toast.ok{background:#107c10}
+  /* ================= TOAST ================= */
+  #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:var(--r-md);font-size:14px;max-width:min(560px,92vw);z-index:50;box-shadow:0 8px 28px rgba(0,0,0,.25);line-height:1.4}
+  #toast.erro{background:#c42b1c;color:#fff}
+  #toast.ok{background:#18794e;color:#fff}
 
-  @media (max-width:600px){
-    body{font-size:14px}
-    header h1{font-size:16px}
-    .ball{width:31px;height:31px;font-size:13px}
-    .grid25{grid-template-columns:repeat(5,1fr)}
+  /* ================= RESPONSIVO ================= */
+  @media (max-width:860px){
+    .hero,.manual{grid-template-columns:1fr;gap:22px}
+    .hero .vol.lg{justify-self:center}
+    .formfin{grid-template-columns:1fr 1fr}
+    .formfin .wide{grid-column:1/-1}
+    .saldo{grid-template-columns:1fr 1fr}
+    .saldo .main{grid-column:1/-1}
   }
+  @media (max-width:560px){
+    body{font-size:14px}
+    .bar{padding:10px 12px;gap:6px}
+    .brand h1{font-size:17px}
+    .bar button{padding:8px 10px;font-size:13px}
+    main{padding:14px 12px 48px}
+    .panel{padding:16px}
+    .vol.lg{--c:40px;--g:6px}
+    .verdict .big{font-size:46px}
+    .faixas{grid-template-columns:repeat(5,1fr);gap:4px}
+    .faixas div{padding:6px 2px}
+    .faixas b{font-size:18px}
+    .games{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+    .vol{--c:19px;--g:3px}
+    .pick{grid-template-columns:repeat(5,1fr)}
+    .pick button{height:auto;aspect-ratio:1}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;scroll-behavior:auto !important}}
 </style>
 </head>
 <body>
@@ -105,142 +210,150 @@
 <!-- ================= TELA DE SENHA ================= -->
 <div id="lock">
   <form class="lockcard" onsubmit="entrar(event)">
-    <h1>🍀 Loto Fácil</h1>
-    <p>Conferência dos 28 jogos fixos</p>
-    <input type="password" id="senha" placeholder="Senha" autocomplete="off" inputmode="numeric" autofocus>
-    <button class="pri" id="btnEntrar" type="submit">Entrar</button>
-    <div class="err" id="lockErr"></div>
+    <div class="mark big" id="lockMark"></div>
+    <h1>Loto Fácil</h1>
+    <p>Seus 28 jogos fixos, conferidos sozinhos.</p>
+    <input type="password" id="senha" placeholder="Senha" autocomplete="off" inputmode="numeric" autofocus aria-label="Senha">
+    <button class="btn-pri" id="btnEntrar" type="submit">Entrar</button>
+    <div class="err" id="lockErr" role="alert"></div>
   </form>
 </div>
 
 <!-- ================= APP ================= -->
 <div id="app" hidden>
   <header>
-    <h1>🍀 Loto Fácil</h1>
-    <button class="ghost" id="btnTema" onclick="alternarTema()" title="Modo claro/escuro">🌙</button>
-    <button onclick="sair()">Sair</button>
-    <button class="danger" onclick="panico()" title="Fechar agora (ou ESC 2x)">🚨 Fechar</button>
+    <div class="bar">
+      <div class="brand"><div class="mark" id="headMark"></div><h1>Loto Fácil</h1></div>
+      <button class="btn-quiet" id="btnTema" onclick="alternarTema()" title="Alternar modo claro e escuro" aria-label="Alternar tema">🌙</button>
+      <button onclick="sair()">Sair</button>
+      <button class="btn-danger" onclick="panico()" title="Fechar agora (ou ESC duas vezes)">Fechar</button>
+    </div>
+    <nav id="tabs">
+      <button data-tab="conferir" class="on">Conferir</button>
+      <button data-tab="apostas">Apostas</button>
+      <button data-tab="historico">Histórico</button>
+      <button data-tab="financeiro">Financeiro</button>
+      <button data-tab="jogos">Meus jogos</button>
+    </nav>
   </header>
 
-  <nav id="tabs">
-    <button data-tab="conferir" class="on">Conferir</button>
-    <button data-tab="apostas">Apostas</button>
-    <button data-tab="historico">Histórico</button>
-    <button data-tab="financeiro">Financeiro</button>
-    <button data-tab="jogos">Meus jogos</button>
-  </nav>
-
   <main>
-    <!-- CONFERIR -->
+    <!-- ================= CONFERIR ================= -->
     <section id="tab-conferir">
-      <div class="card">
-        <h2>Conferência automática</h2>
-        <div class="row">
-          <button class="pri" id="btnUltimo" onclick="buscar()">Buscar último resultado</button>
-          <input type="number" id="numConcurso" placeholder="Nº concurso" min="1" style="width:130px">
-          <button id="btnConcurso" onclick="buscar(Number(document.getElementById('numConcurso').value))">Buscar concurso</button>
-        </div>
-        <p class="muted" style="margin:10px 0 0">O resultado é buscado na Caixa (com fonte alternativa de reserva). Só concursos registrados em <b>Apostas</b> ficam salvos no histórico.</p>
+      <div class="panel" id="resCard"></div>
+
+      <div class="panel" id="gamesCard" hidden>
+        <h2>Seus 28 jogos neste concurso</h2>
+        <p class="lead">Do que fez mais pontos para o que fez menos. Roxo cheio é acerto, cinza é dezena marcada que não saiu, e o contorno roxo é dezena sorteada que ficou fora daquele jogo.</p>
+        <div class="games" id="gamesGrid"></div>
       </div>
 
-      <div class="card" id="resCard" hidden></div>
-
-      <div class="card">
-        <h2>Conferência manual (plano B)</h2>
-        <div class="row">
-          <input type="number" id="manConcurso" placeholder="Nº concurso (opcional)" min="1" style="width:200px">
-          <span class="muted">Selecionadas: <b class="num" id="manCont">0</b>/15</span>
+      <div class="panel">
+        <h2>Conferir na mão</h2>
+        <p class="lead">Para quando a busca automática falhar. Toque nas 15 dezenas sorteadas.</p>
+        <div class="manual">
+          <div class="pick" id="grid25"></div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div><div class="counter"><span id="manCont">0</span><small> de 15</small></div><div class="muted" style="margin-top:4px">dezenas marcadas</div></div>
+            <label class="field" style="max-width:220px">Número do concurso
+              <input type="number" id="manConcurso" min="1" placeholder="Opcional">
+            </label>
+            <p class="muted" style="max-width:40ch">Com o número do concurso, a conferência fica salva no histórico. Sem ele, aparece só na tela.</p>
+            <div class="row">
+              <button onclick="limparManual()">Limpar</button>
+              <button class="btn-pri" id="btnManual" onclick="conferirManual()">Conferir</button>
+            </div>
+          </div>
         </div>
-        <div class="grid25" id="grid25"></div>
-        <div class="row">
-          <button onclick="limparManual()">Limpar</button>
-          <button class="pri" id="btnManual" onclick="conferirManual()">Conferir</button>
-        </div>
-        <p class="muted" style="margin:10px 0 0">Com número de concurso, o resultado fica salvo no histórico. Sem número, a conferência é só na tela.</p>
       </div>
     </section>
 
-    <!-- APOSTAS -->
+    <!-- ================= APOSTAS ================= -->
     <section id="tab-apostas" hidden>
-      <div class="card">
-        <h2>Registrar concurso apostado</h2>
-        <div class="row">
-          <input type="number" id="apoConcurso" placeholder="Nº concurso" min="1" style="width:140px">
-          <input type="number" id="apoQtd" value="1" min="1" max="52" style="width:80px" title="Concursos seguidos (teimosinha)">
-          <span class="muted">concurso(s) seguido(s)</span>
-          <button class="pri" id="btnApo" onclick="registrarAposta()">Registrar</button>
+      <div class="panel">
+        <h2>Registrar aposta</h2>
+        <p class="lead">Só os concursos registrados aqui entram na conferência automática e no e-mail. <span id="sugProx"></span></p>
+        <div class="row" style="align-items:flex-end">
+          <label class="field">Concurso<input type="number" id="apoConcurso" min="1" style="width:140px"></label>
+          <label class="field" title="Use mais de 1 para a teimosinha">Concursos seguidos<input type="number" id="apoQtd" value="1" min="1" max="52" style="width:140px"></label>
+          <button class="btn-pri" id="btnApo" onclick="registrarAposta()">Registrar aposta</button>
         </div>
         <label class="chk"><input type="checkbox" id="apoDeb" checked> Lançar o débito de <b class="num" id="custoTxt">R$ 98,00</b> por concurso no Financeiro</label>
-        <p class="muted" style="margin:10px 0 0">A conferência automática e o e-mail só rodam para os concursos registrados aqui. <span id="sugProx"></span></p>
       </div>
-      <div class="card">
+      <div class="panel">
         <h2>Concursos registrados</h2>
-        <div class="tablewrap" id="apoLista"></div>
+        <div class="tablewrap" id="apoLista" style="margin-top:10px"></div>
       </div>
     </section>
 
-    <!-- HISTÓRICO -->
+    <!-- ================= HISTÓRICO ================= -->
     <section id="tab-historico" hidden>
-      <div class="card">
+      <div class="panel">
         <h2>Histórico de conferências</h2>
+        <p class="lead">Linhas em destaque tiveram ao menos um jogo premiado.</p>
         <div class="tablewrap" id="histLista"></div>
       </div>
     </section>
 
-    <!-- FINANCEIRO -->
+    <!-- ================= FINANCEIRO ================= -->
     <section id="tab-financeiro" hidden>
-      <div class="card">
-        <h2>Resumo</h2>
-        <div class="sum" id="finResumo"></div>
+      <div class="panel">
+        <h2>Conta corrente</h2>
+        <p class="lead">Tudo o que saiu em apostas e tudo o que entrou em prêmios.</p>
+        <div class="saldo" id="finResumo"></div>
       </div>
-      <div class="card">
+      <div class="panel">
         <h2>Novo lançamento</h2>
+        <p class="lead">Prêmios não entram sozinhos: lance o valor que você realmente recebeu.</p>
         <div class="formfin">
-          <label>Data<input type="date" id="finData"></label>
-          <label>Tipo
+          <label class="field">Data<input type="date" id="finData"></label>
+          <label class="field">Tipo
             <select id="finTipo">
               <option value="Aposta">Aposta (saída)</option>
               <option value="Prêmio">Prêmio (entrada)</option>
             </select>
           </label>
-          <label>Concurso (opcional)<input type="number" id="finConc" min="1"></label>
-          <label>Valor (R$)<input type="number" id="finValor" min="0.01" step="0.01" placeholder="0,00"></label>
-          <label style="grid-column:1/-1">Descrição<input type="text" id="finDesc" maxlength="200" placeholder="Ex.: Prêmio concurso 3520 (13 pontos)"></label>
+          <label class="field">Concurso<input type="number" id="finConc" min="1" placeholder="Opcional"></label>
+          <label class="field wide">Descrição<input type="text" id="finDesc" maxlength="200" placeholder="Ex.: prêmio do concurso 3520"></label>
+          <label class="field">Valor (R$)<input type="number" id="finValor" min="0.01" step="0.01" placeholder="0,00"></label>
         </div>
-        <div class="row" style="margin-top:10px">
+        <div class="row" style="margin-top:14px">
           <button onclick="limparFin()">Limpar</button>
-          <button class="pri" id="btnFin" onclick="lancar()">Lançar</button>
+          <button class="btn-pri" id="btnFin" onclick="lancar()">Lançar</button>
         </div>
-        <p class="muted" style="margin:10px 0 0">Prêmios não entram sozinhos: lance o valor que você realmente recebeu, depois de conferir na Caixa.</p>
       </div>
-      <div class="card">
+      <div class="panel">
         <h2>Extrato</h2>
-        <div class="tablewrap" id="finLista"></div>
+        <div class="tablewrap" id="finLista" style="margin-top:10px"></div>
       </div>
     </section>
 
-    <!-- MEUS JOGOS -->
+    <!-- ================= MEUS JOGOS ================= -->
     <section id="tab-jogos" hidden>
-      <div class="card">
-        <h2>Grupo de 18 dezenas</h2>
-        <div class="chips" id="poolChips"></div>
-        <p class="muted" style="margin:10px 0 0">28 jogos fixos × R$ 3,50 = <b>R$ 98,00</b> por concurso.</p>
+      <div class="panel">
+        <h2>Seu grupo de 20 dezenas</h2>
+        <p class="lead">Os 28 jogos saem todos destas dezenas. Custo por concurso: <b class="num" id="custoTxt2">R$ 98,00</b>.</p>
+        <div class="vol lg" id="poolVol"></div>
       </div>
-      <div class="card">
+      <div class="panel">
         <h2>Os 28 jogos</h2>
-        <div class="tablewrap" id="jogosLista"></div>
+        <p class="lead">Sempre os mesmos, toda semana.</p>
+        <div class="games" id="jogosLista"></div>
       </div>
     </section>
   </main>
 </div>
 
-<div id="toast" hidden></div>
+<div id="toast" hidden role="status"></div>
 
 <script>
 /* ============================================================
-   CONFIGURAÇÃO — cole aqui a URL do App da Web do Apps Script
+   CONFIGURAÇÃO — URL do App da Web do Apps Script
    ============================================================ */
 const API_URL = 'https://script.google.com/macros/s/AKfycbzbnMuCBKEPlZYzOvbij75W8FmnLik0gFkrBWo-6YxyZZhmlwJldDREEfNwFuoJAwuHmA/exec';
+
+/* Grupo de 20 usado só para a marca visual da tela de senha (os jogos vêm do servidor) */
+const MARCA = [1,2,3,4,6,8,9,11,12,13,14,15,17,18,19,21,22,23,24,25];
 
 /* Estado só em memória (nada em localStorage) */
 let SENHA = null, JOGOS = [], POOL = [], HIST = [], APOSTAS = [], PROXIMO = null;
@@ -252,6 +365,7 @@ const $ = id => document.getElementById(id);
 const dz = n => String(n).padStart(2, '0');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const brl = v => Number(v).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+const plural = (n, s, p) => n + ' ' + (n === 1 ? s : p);
 
 let toastTimer = null;
 function toast(msg, tipo) {
@@ -260,7 +374,7 @@ function toast(msg, tipo) {
   t.className = tipo || '';
   t.hidden = false;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.hidden = true, tipo === 'erro' ? 6000 : 3500);
+  toastTimer = setTimeout(() => t.hidden = true, tipo === 'erro' ? 6500 : 3500);
 }
 
 function busy(btn, on, txt) {
@@ -271,13 +385,37 @@ function busy(btn, on, txt) {
 
 async function api(acao, dados) {
   if (!API_URL.startsWith('https://')) throw new Error('Configure a URL do Apps Script no início do arquivo (API_URL).');
-  const resp = await fetch(API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ acao, senha: SENHA }, dados || {})) });
+  let resp;
+  try {
+    resp = await fetch(API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ acao, senha: SENHA }, dados || {})) });
+  } catch (e) {
+    throw new Error('Sem conexão com o servidor. Verifique a internet e tente de novo.');
+  }
   const j = await resp.json();
   if (!j.ok) {
     if (j.auth === false) { sair(); }
-    throw new Error(j.erro || 'Erro desconhecido.');
+    throw new Error(j.erro || 'O servidor recusou a operação.');
   }
   return j;
+}
+
+/* ================= VOLANTES ================= */
+function marca(el) {
+  el.innerHTML = Array.from({length:25}, (_, i) => '<i' + (MARCA.includes(i + 1) ? ' class="on"' : '') + '></i>').join('');
+}
+
+/* jogo: dezenas marcadas · sorteio: Set das sorteadas (opcional) */
+function volante(jogo, sorteio, extra) {
+  const mk = new Set(jogo || []);
+  let h = '<div class="vol' + (sorteio ? ' cmp' : '') + (extra ? ' ' + extra : '') + '" aria-label="Volante">';
+  for (let n = 1; n <= 25; n++) {
+    let c = '';
+    if (mk.has(n) && sorteio && sorteio.has(n)) c = 'hit';
+    else if (mk.has(n)) c = sorteio ? 'mk' : 'hit';
+    else if (sorteio && sorteio.has(n)) c = 'drawn';
+    h += '<span' + (c ? ' class="' + c + '"' : '') + '>' + dz(n) + '</span>';
+  }
+  return h + '</div>';
 }
 
 /* ================= ACESSO ================= */
@@ -308,9 +446,10 @@ async function entrar(ev) {
 function sair() {
   SENHA = null; JOGOS = []; POOL = []; HIST = []; APOSTAS = []; PROXIMO = null;
   FIN = []; ULTIMO_RES = null;
-  $('finLista').innerHTML = ''; $('finResumo').innerHTML = '';
-  $('resCard').hidden = true; $('resCard').innerHTML = '';
+  ['finLista','finResumo','apoLista','histLista','jogosLista','gamesGrid','poolVol'].forEach(id => $(id).innerHTML = '');
+  $('gamesCard').hidden = true;
   limparManual();
+  irPara('conferir');
   $('app').hidden = true;
   $('lock').hidden = false;
   $('senha').focus();
@@ -343,6 +482,7 @@ $('tabs').addEventListener('click', e => {
   if (!b) return;
   document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
   ['conferir','apostas','historico','financeiro','jogos'].forEach(t => $('tab-' + t).hidden = (t !== b.dataset.tab));
+  window.scrollTo({ top: 0 });
 });
 
 function irPara(tab) {
@@ -356,104 +496,139 @@ function renderTudo() {
   renderApostas();
   renderHistorico();
   renderFinanceiro();
+  renderVazio();
   limparFin();
   montarGrid();
 }
 
-function chipsJogo(jogo, set) {
-  return '<div class="chips">' + jogo.map(n => '<span class="chip' + (set && set.has(n) ? ' hit' : '') + '">' + dz(n) + '</span>').join('') + '</div>';
+function renderJogos() {
+  const custo = brl(JOGOS.length * VALOR_APOSTA);
+  $('custoTxt').textContent = custo;
+  $('custoTxt2').textContent = custo;
+  $('poolVol').outerHTML = volante(POOL, null, 'lg').replace('<div class="vol lg"', '<div class="vol lg" id="poolVol"');
+  $('jogosLista').innerHTML = JOGOS.map((j, i) =>
+    '<div class="game"><header><span>Jogo ' + dz(i + 1) + '</span></header>' + volante(j) + '</div>').join('');
 }
 
-function renderJogos() {
-  $('custoTxt').textContent = brl(JOGOS.length * VALOR_APOSTA);
-  $('poolChips').innerHTML = POOL.map(n => '<span class="chip">' + dz(n) + '</span>').join('');
-  $('jogosLista').innerHTML = '<table><thead><tr><th>Jogo</th><th>Dezenas</th></tr></thead><tbody>' +
-    JOGOS.map((j, i) => '<tr><td class="num">' + dz(i + 1) + '</td><td>' + chipsJogo(j) + '</td></tr>').join('') +
-    '</tbody></table>';
+function renderVazio() {
+  ULTIMO_RES = null;
+  $('gamesCard').hidden = true;
+  $('resCard').innerHTML =
+    '<div class="empty">' +
+      volante(POOL, null, 'lg') +
+      '<div class="txt">' +
+        '<h2>Confira o último sorteio</h2>' +
+        '<p>Busco o resultado na Caixa e comparo com os seus 28 jogos. Se o concurso estiver registrado em Apostas, a conferência fica salva no histórico.</p>' +
+        '<div class="search">' +
+          '<button class="btn-pri" id="btnUltimo" onclick="buscar()">Buscar último resultado</button>' +
+          '<input type="number" id="numConcurso" placeholder="Concurso" min="1" aria-label="Número do concurso">' +
+          '<button id="btnConcurso" onclick="buscar(Number(document.getElementById(\'numConcurso\').value))">Buscar este</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
 }
 
 function renderApostas() {
-  $('sugProx').innerHTML = PROXIMO ? 'Próximo concurso: <b class="num">' + PROXIMO.concurso + '</b>' + (PROXIMO.data ? ' (' + esc(PROXIMO.data) + ')' : '') + '.' : '';
+  $('sugProx').innerHTML = PROXIMO
+    ? 'Próximo concurso: <b class="num">' + PROXIMO.concurso + '</b>' + (PROXIMO.data ? ', em ' + esc(PROXIMO.data) : '') + '.'
+    : 'Para saber o número do próximo concurso, busque o último resultado na aba Conferir.';
   if (PROXIMO && !$('apoConcurso').value) $('apoConcurso').value = PROXIMO.concurso;
 
-  if (!APOSTAS.length) { $('apoLista').innerHTML = '<p class="muted">Nenhum concurso registrado ainda.</p>'; return; }
-  $('apoLista').innerHTML = '<table><thead><tr><th>Concurso</th><th>Registrado em</th><th>Status</th><th></th></tr></thead><tbody>' +
+  if (!APOSTAS.length) { $('apoLista').innerHTML = '<p class="muted">Nenhuma aposta registrada ainda. Registre o concurso logo depois de jogar.</p>'; return; }
+  $('apoLista').innerHTML = '<table><thead><tr><th>Concurso</th><th>Registrado em</th><th>Situação</th><th></th></tr></thead><tbody>' +
     APOSTAS.map(a => {
       const st = a.conferido
-        ? (a.melhor >= 11 ? '<span class="badge b-ok">Premiado · ' + a.melhor + ' pts</span>' : '<span class="badge b-warn">Conferido · ' + a.melhor + ' pts</span>')
+        ? (a.melhor >= 11 ? '<span class="badge b-ok">Premiado, ' + a.melhor + ' pontos</span>' : '<span class="badge b-mut">Sem prêmio, ' + a.melhor + ' pontos</span>')
         : '<span class="badge b-acc">Aguardando sorteio</span>';
       return '<tr><td class="num">' + a.concurso + '</td><td>' + esc(a.registradoEm) + '</td><td>' + st + '</td>' +
-        '<td class="r"><button onclick="removerAposta(' + a.concurso + ')" title="Remover">🗑</button></td></tr>';
+        '<td class="r"><button class="btn-icon" onclick="removerAposta(' + a.concurso + ')" title="Remover aposta" aria-label="Remover">✕</button></td></tr>';
     }).join('') + '</tbody></table>';
 }
 
 function renderHistorico() {
-  if (!HIST.length) { $('histLista').innerHTML = '<p class="muted">Nenhuma conferência salva ainda.</p>'; return; }
+  if (!HIST.length) { $('histLista').innerHTML = '<p class="muted">Nenhuma conferência salva ainda. Elas aparecem aqui depois do primeiro sorteio de um concurso registrado.</p>'; return; }
   $('histLista').innerHTML = '<table><thead><tr><th>Concurso</th><th>Data</th><th class="r">Melhor</th>' +
     '<th class="r">15</th><th class="r">14</th><th class="r">13</th><th class="r">12</th><th class="r">11</th>' +
     '<th class="r">Total estimado</th><th>Fonte</th><th></th></tr></thead><tbody>' +
     HIST.map(h => '<tr class="' + (h.melhor >= 11 ? 'prem' : '') + '">' +
-      '<td class="num">' + h.concurso + '</td><td>' + esc(h.data || '-') + '</td>' +
+      '<td class="num">' + h.concurso + '</td><td class="num">' + esc(h.data || '-') + '</td>' +
       '<td class="r num">' + h.melhor + '</td>' +
-      [15,14,13,12,11].map(f => '<td class="r num">' + (h.faixas[f] || 0) + '</td>').join('') +
+      [15,14,13,12,11].map(f => '<td class="r num">' + (h.faixas[f] || '<span class="muted">0</span>') + '</td>').join('') +
       '<td class="r num">' + (h.total != null ? brl(h.total) : '-') + '</td>' +
       '<td>' + esc(h.fonte) + '</td>' +
       '<td class="r" style="white-space:nowrap"><button onclick="verHistorico(' + h.concurso + ')">Ver</button> ' +
-      '<button onclick="excluirResultado(' + h.concurso + ')" title="Excluir">🗑</button></td></tr>').join('') +
+      '<button class="btn-icon" onclick="excluirResultado(' + h.concurso + ')" title="Excluir conferência" aria-label="Excluir">✕</button></td></tr>').join('') +
     '</tbody></table>';
 }
 
-function renderResultado(r, aviso) {
+function renderResultado(r, aviso, semRolar) {
   const set = new Set(r.dezenas);
   const pontos = (r.pontos && r.pontos.length === JOGOS.length) ? r.pontos : JOGOS.map(j => j.filter(n => set.has(n)).length);
+  const faixas = r.faixas || {15:0,14:0,13:0,12:0,11:0};
+  if (!r.faixas) pontos.forEach(p => { if (p >= 11) faixas[p]++; });
   const premiados = pontos.filter(p => p >= 11).length;
+  const melhor = Math.max.apply(null, pontos);
+  ULTIMO_RES = r;
 
   let status;
-  if (r.apostado) status = '<span class="badge b-ok">Apostado · salvo no histórico</span>';
-  else if (r.salvo) status = '<span class="badge b-warn">Salvo (concurso não registrado em Apostas)</span>';
-  else if (r.concurso) status = '<span class="badge b-warn">Não registrado como apostado · não salvo</span> ' +
-    '<button onclick="marcarApostado(' + r.concurso + ')">Marcar como apostado e salvar</button>';
-  else status = '<span class="badge b-warn">Conferência só na tela</span>';
+  if (r.apostado) status = '<span class="badge b-ok">Aposta registrada, salvo no histórico</span>';
+  else if (r.salvo) status = '<span class="badge b-warn">Salvo, mas o concurso não está em Apostas</span>';
+  else if (r.concurso) status = '<span class="badge b-warn">Concurso não registrado em Apostas</span>' +
+    '<button onclick="marcarApostado(' + r.concurso + ')">Registrar aposta e salvar</button>';
+  else status = '<span class="badge b-mut">Conferência só na tela</span>';
 
-  const titulo = r.concurso ? 'Concurso <span class="num">' + r.concurso + '</span>' : 'Conferência manual';
-  const destaque = r.melhor >= 11
-    ? '<span class="badge b-ok" style="font-size:14px">🎉 PREMIADO · ' + premiados + ' jogo(s) · melhor: ' + r.melhor + ' pontos</span>'
-    : '<span class="badge b-warn" style="font-size:14px">Sem prêmio · melhor: ' + r.melhor + ' pontos</span>';
-
-  const ordem = pontos.map((p, i) => i).sort((a, b) => pontos[b] - pontos[a] || a - b);
-
-  ULTIMO_RES = r;
   const jaLancado = r.concurso && FIN.some(f => f.tipo === 'Prêmio' && f.concurso === r.concurso);
-  const btnPremio = (r.melhor >= 11 && r.concurso)
+  const btnPremio = (melhor >= 11 && r.concurso)
     ? (jaLancado
         ? '<span class="badge b-ok">Prêmio já lançado no Financeiro</span>'
-        : '<button class="pri" onclick="prepararPremio()">Lançar prêmio no Financeiro</button>')
+        : '<button class="btn-pri" onclick="prepararPremio()">Lançar prêmio no Financeiro</button>')
     : '';
 
+  const meta = [r.data ? 'Sorteio em ' + esc(r.data) : '', r.fonte ? 'fonte: ' + esc(r.fonte) : ''].filter(Boolean).join(', ');
+
   $('resCard').innerHTML =
-    '<h2>' + titulo + '</h2>' +
-    '<div class="muted">' + (r.data ? 'Sorteio: ' + esc(r.data) + ' · ' : '') + 'Fonte: ' + esc(r.fonte || '-') + '</div>' +
-    '<div class="balls">' + r.dezenas.map(n => '<span class="ball">' + dz(n) + '</span>').join('') + '</div>' +
-    '<div class="row" style="margin-bottom:6px">' + destaque + '</div>' +
-    '<div class="row">' + status + '</div>' +
-    (btnPremio ? '<div class="row" style="margin-top:8px">' + btnPremio + '</div>' : '') +
-    (aviso ? '<p class="muted">' + esc(aviso) + '</p>' : '') +
-    '<div class="sum">' +
-      [15,14,13,12,11].map(f => '<div><small>' + f + ' pontos</small><b>' + (r.faixas ? r.faixas[f] : pontos.filter(p => p === f).length) + '</b></div>').join('') +
-      '<div><small>Total estimado</small><b style="font-size:16px">' + (r.total != null ? brl(r.total) : '—') + '</b></div>' +
+    '<div class="hero">' +
+      volante(r.dezenas, null, 'lg') +
+      '<div>' +
+        '<div class="hero-head"><h2>' + (r.concurso ? 'Concurso <span class="num">' + r.concurso + '</span>' : 'Conferência manual') + '</h2></div>' +
+        (meta ? '<div class="hero-meta">' + meta + '</div>' : '') +
+        '<div class="verdict' + (melhor >= 11 ? ' win' : '') + '">' +
+          '<span class="big">' + melhor + '</span>' +
+          '<span class="lbl">' + (melhor >= 11
+            ? 'pontos no melhor jogo. ' + plural(premiados, 'jogo premiado', 'jogos premiados') + '.'
+            : 'pontos no melhor jogo. Nenhum premiado desta vez.') + '</span>' +
+        '</div>' +
+        '<div class="faixas">' + [15,14,13,12,11].map(f =>
+          '<div class="' + (faixas[f] ? 'got' : '') + '"><small>' + f + ' pontos</small><b>' + (faixas[f] || 0) + '</b></div>').join('') +
+        '</div>' +
+        '<div class="hero-foot">' +
+          (r.total != null ? '<span class="total">Total estimado <b>' + brl(r.total) + '</b></span>' : '') +
+        '</div>' +
+        '<div class="hero-foot" style="margin-top:12px">' + status + btnPremio + '</div>' +
+        (aviso ? '<p class="muted" style="margin-top:10px">' + esc(aviso) + '</p>' : '') +
+        '<div class="search" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">' +
+          '<button id="btnUltimo" onclick="buscar()">Buscar último resultado</button>' +
+          '<input type="number" id="numConcurso" placeholder="Concurso" min="1" aria-label="Número do concurso">' +
+          '<button id="btnConcurso" onclick="buscar(Number(document.getElementById(\'numConcurso\').value))">Buscar este</button>' +
+        '</div>' +
+      '</div>' +
     '</div>' +
-    '<div class="tablewrap"><table><thead><tr><th>Jogo</th><th>Dezenas (acertos destacados)</th><th class="r">Pontos</th></tr></thead><tbody>' +
-      ordem.map(i => '<tr class="' + (pontos[i] >= 11 ? 'prem' : '') + '"><td class="num">' + dz(i + 1) + '</td><td>' + chipsJogo(JOGOS[i], set) + '</td>' +
-        '<td class="r num">' + pontos[i] + (pontos[i] >= 11 ? ' 🏆' : '') + '</td></tr>').join('') +
-    '</tbody></table></div>' +
-    '<p class="muted">Valores são estimativas pelo rateio divulgado. Confirme sempre no app da Caixa ou na lotérica.</p>';
-  $('resCard').hidden = false;
-  $('resCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    (r.total != null ? '<p class="muted" style="margin-top:14px">O total é uma estimativa pelo rateio divulgado. Confirme no app da Caixa ou na lotérica antes de resgatar.</p>' : '');
+
+  const ordem = pontos.map((p, i) => i).sort((a, b) => pontos[b] - pontos[a] || a - b);
+  $('gamesGrid').innerHTML = ordem.map(i =>
+    '<div class="game' + (pontos[i] >= 11 ? ' prem' : '') + '">' +
+      '<header><span>Jogo ' + dz(i + 1) + '</span><b>' + pontos[i] + '<small>pontos</small></b></header>' +
+      volante(JOGOS[i], set) +
+    '</div>').join('');
+  $('gamesCard').hidden = false;
+
+  if (!semRolar) $('resCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ================= AÇÕES ================= */
 async function buscar(concurso) {
-  if (concurso !== undefined && (!Number.isInteger(concurso) || concurso < 1)) { toast('Informe um número de concurso válido.', 'erro'); return; }
+  if (concurso !== undefined && (!Number.isInteger(concurso) || concurso < 1)) { toast('Digite o número do concurso antes de buscar.', 'erro'); return; }
   const btn = concurso ? $('btnConcurso') : $('btnUltimo');
   busy(btn, true, 'Buscando...');
   try {
@@ -462,10 +637,9 @@ async function buscar(concurso) {
     const r = j.resultado;
     if (r.proximo) PROXIMO = { concurso: r.proximo, data: r.dataProximo };
     renderApostas(); renderHistorico();
-    renderResultado(r, j.novos && j.novos.length ? 'Também conferi apostas pendentes: concurso(s) ' + j.novos.join(', ') + '.' : '');
+    renderResultado(r, j.novos && j.novos.length ? 'Também conferi apostas pendentes: concurso ' + j.novos.join(', ') + '.' : '');
   } catch (e) {
     toast(e.message, 'erro');
-  } finally {
     busy(btn, false);
   }
 }
@@ -475,33 +649,34 @@ async function marcarApostado(concurso) {
     const j = await api('registrarAposta', { concurso, qtd: 1, lancarDebito: $('apoDeb').checked });
     APOSTAS = j.apostas; FIN = j.financeiro || FIN; renderFinanceiro();
     await buscar(concurso);
-    toast('Concurso ' + concurso + ' registrado e salvo.', 'ok');
+    toast('Aposta do concurso ' + concurso + ' registrada.', 'ok');
   } catch (e) { toast(e.message, 'erro'); }
 }
 
 async function registrarAposta() {
   const concurso = Number($('apoConcurso').value);
   const qtd = Number($('apoQtd').value) || 1;
-  if (!Number.isInteger(concurso) || concurso < 1) { toast('Informe o número do concurso.', 'erro'); return; }
+  if (!Number.isInteger(concurso) || concurso < 1) { toast('Digite o número do concurso.', 'erro'); return; }
   const btn = $('btnApo');
-  busy(btn, true, 'Salvando...');
+  busy(btn, true, 'Registrando...');
   try {
     const deb = $('apoDeb').checked;
     const j = await api('registrarAposta', { concurso, qtd, lancarDebito: deb });
     APOSTAS = j.apostas; FIN = j.financeiro || FIN;
     renderApostas(); renderFinanceiro();
     toast(j.adicionadas
-      ? j.adicionadas + ' concurso(s) registrado(s)' + (deb ? ' e débito lançado no Financeiro.' : '.')
+      ? plural(j.adicionadas, 'aposta registrada', 'apostas registradas') + (deb ? ', com débito no Financeiro.' : '.')
       : 'Esses concursos já estavam registrados.', 'ok');
   } catch (e) { toast(e.message, 'erro'); }
   finally { busy(btn, false); }
 }
 
 async function removerAposta(concurso) {
-  if (!confirm('Remover o concurso ' + concurso + ' das apostas?')) return;
+  if (!confirm('Remover a aposta do concurso ' + concurso + '? O débito no Financeiro continua lá; exclua por lá se precisar.')) return;
   try {
     const j = await api('removerAposta', { concurso });
     APOSTAS = j.apostas; renderApostas();
+    toast('Aposta removida.', 'ok');
   } catch (e) { toast(e.message, 'erro'); }
 }
 
@@ -510,6 +685,7 @@ async function excluirResultado(concurso) {
   try {
     const j = await api('excluirResultado', { concurso });
     HIST = j.historico; APOSTAS = j.apostas; renderHistorico(); renderApostas();
+    toast('Conferência excluída.', 'ok');
   } catch (e) { toast(e.message, 'erro'); }
 }
 
@@ -517,9 +693,8 @@ function verHistorico(concurso) {
   const h = HIST.find(x => x.concurso === concurso);
   if (!h) return;
   const apostado = APOSTAS.some(a => a.concurso === concurso);
-  renderResultado(Object.assign({}, h, { apostado, salvo: true }));
   irPara('conferir');
-  $('resCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  renderResultado(Object.assign({}, h, { apostado, salvo: true }));
 }
 
 /* ================= FINANCEIRO ================= */
@@ -531,7 +706,8 @@ function dataBR(iso) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
   return m ? m[3] + '/' + m[2] + '/' + m[1] : (iso || '-');
 }
-const moedaSinal = v => '<span class="' + (v < 0 ? 'neg' : (v > 0 ? 'pos' : '')) + '">' + brl(v) + '</span>';
+/* Padrão dos seus apps: vermelho só para valor negativo; o resto na cor normal do texto */
+const moedaSinal = v => '<span' + (v < 0 ? ' class="neg"' : '') + '>' + brl(v) + '</span>';
 
 function renderFinanceiro() {
   const apostado = FIN.filter(f => f.valor < 0).reduce((s, f) => s - f.valor, 0);
@@ -540,12 +716,12 @@ function renderFinanceiro() {
   const retorno = apostado > 0 ? (ganho / apostado * 100) : null;
 
   $('finResumo').innerHTML =
-    '<div><small>Total apostado</small><b style="font-size:16px">' + brl(apostado) + '</b></div>' +
-    '<div><small>Total ganho</small><b style="font-size:16px">' + brl(ganho) + '</b></div>' +
-    '<div><small>Saldo</small><b style="font-size:16px">' + moedaSinal(saldo) + '</b></div>' +
-    '<div><small>Retorno</small><b style="font-size:16px">' + (retorno == null ? '—' : retorno.toFixed(1).replace('.', ',') + '%') + '</b></div>';
+    '<div class="main"><small>Saldo</small><b>' + moedaSinal(saldo) + '</b></div>' +
+    '<div><small>Total apostado</small><b>' + brl(apostado) + '</b></div>' +
+    '<div><small>Total ganho</small><b>' + brl(ganho) + '</b></div>' +
+    '<div><small>Retorno sobre o apostado</small><b>' + (retorno == null ? '—' : retorno.toFixed(1).replace('.', ',') + '%') + '</b></div>';
 
-  if (!FIN.length) { $('finLista').innerHTML = '<p class="muted">Nenhum lançamento ainda.</p>'; return; }
+  if (!FIN.length) { $('finLista').innerHTML = '<p class="muted">Nenhum lançamento ainda. O débito entra sozinho quando você registra uma aposta.</p>'; return; }
 
   let acc = 0;
   const linhas = FIN.map(f => { acc += f.valor; return Object.assign({}, f, { saldo: acc }); }).reverse();
@@ -553,12 +729,12 @@ function renderFinanceiro() {
     '<th class="r">Valor</th><th class="r">Saldo</th><th></th></tr></thead><tbody>' +
     linhas.map(f => '<tr>' +
       '<td class="num">' + esc(dataBR(f.data)) + '</td>' +
-      '<td>' + esc(f.tipo) + '</td>' +
+      '<td>' + (f.tipo === 'Prêmio' ? '<span class="badge b-ok">Prêmio</span>' : '<span class="badge b-mut">Aposta</span>') + '</td>' +
       '<td class="num">' + (f.concurso || '-') + '</td>' +
       '<td>' + esc(f.descricao) + '</td>' +
       '<td class="r num">' + moedaSinal(f.valor) + '</td>' +
       '<td class="r num">' + moedaSinal(f.saldo) + '</td>' +
-      '<td class="r"><button onclick="excluirLancamento(\'' + esc(f.id) + '\')" title="Excluir">🗑</button></td></tr>').join('') +
+      '<td class="r"><button class="btn-icon" onclick="excluirLancamento(\'' + esc(f.id) + '\')" title="Excluir lançamento" aria-label="Excluir">✕</button></td></tr>').join('') +
     '</tbody></table>';
 }
 
@@ -577,17 +753,19 @@ function prepararPremio() {
   $('finData').value = hojeISO();
   $('finTipo').value = 'Prêmio';
   $('finConc').value = r.concurso || '';
-  $('finValor').value = r.total != null ? r.total.toFixed(2) : '';
-  $('finDesc').value = 'Prêmio concurso ' + (r.concurso || '') + ' (melhor jogo: ' + r.melhor + ' pontos)';
+  $('finValor').value = r.total != null ? Number(r.total).toFixed(2) : '';
+  const set = new Set(r.dezenas);
+  const melhor = Math.max.apply(null, JOGOS.map(j => j.filter(n => set.has(n)).length));
+  $('finDesc').value = 'Prêmio do concurso ' + (r.concurso || '') + ' (melhor jogo: ' + melhor + ' pontos)';
   $('finValor').focus();
   toast('Confira o valor recebido e clique em Lançar.');
 }
 
 async function lancar() {
   const valor = Number($('finValor').value);
-  if (!(valor > 0)) { toast('Informe um valor maior que zero.', 'erro'); return; }
+  if (!(valor > 0)) { toast('Digite um valor maior que zero.', 'erro'); return; }
   const conc = $('finConc').value ? Number($('finConc').value) : null;
-  if (conc !== null && (!Number.isInteger(conc) || conc < 1)) { toast('Concurso inválido.', 'erro'); return; }
+  if (conc !== null && (!Number.isInteger(conc) || conc < 1)) { toast('O número do concurso não é válido.', 'erro'); return; }
   const btn = $('btnFin');
   busy(btn, true, 'Lançando...');
   try {
@@ -595,14 +773,14 @@ async function lancar() {
       data: $('finData').value || hojeISO(),
       tipo: $('finTipo').value,
       concurso: conc,
-      descricao: $('finDesc').value.trim(),
+      descricao: $('finDesc').value.trim() || ($('finTipo').value + (conc ? ' do concurso ' + conc : '')),
       valor
     });
     FIN = j.financeiro;
     renderFinanceiro();
     limparFin();
-    if (ULTIMO_RES && !$('resCard').hidden) renderResultadoSilencioso();
-    toast('Lançamento registrado.', 'ok');
+    if (ULTIMO_RES) renderResultado(ULTIMO_RES, '', true);
+    toast('Lançado.', 'ok');
   } catch (e) { toast(e.message, 'erro'); }
   finally { busy(btn, false); }
 }
@@ -612,19 +790,11 @@ async function excluirLancamento(id) {
   try {
     const j = await api('excluirLancamento', { id });
     FIN = j.financeiro; renderFinanceiro();
+    toast('Lançamento excluído.', 'ok');
   } catch (e) { toast(e.message, 'erro'); }
 }
 
-/* Atualiza o cartão de resultado sem rolar a tela (ex.: depois de lançar o prêmio) */
-function renderResultadoSilencioso() {
-  const card = $('resCard');
-  const scroll = card.scrollIntoView;
-  card.scrollIntoView = () => {};
-  renderResultado(ULTIMO_RES);
-  card.scrollIntoView = scroll;
-}
-
-/* Manual */
+/* ================= CONFERÊNCIA MANUAL ================= */
 function montarGrid() {
   const g = $('grid25');
   g.innerHTML = '';
@@ -633,11 +803,13 @@ function montarGrid() {
     b.type = 'button';
     b.textContent = dz(n);
     b.className = selManual.has(n) ? 'sel' : '';
+    b.setAttribute('aria-pressed', selManual.has(n));
     b.onclick = () => {
       if (selManual.has(n)) selManual.delete(n);
       else if (selManual.size < 15) selManual.add(n);
-      else { toast('Já são 15 dezenas selecionadas.', 'erro'); return; }
+      else { toast('Já são 15 dezenas. Desmarque uma para trocar.', 'erro'); return; }
       b.className = selManual.has(n) ? 'sel' : '';
+      b.setAttribute('aria-pressed', selManual.has(n));
       $('manCont').textContent = selManual.size;
     };
     g.appendChild(b);
@@ -652,9 +824,9 @@ function limparManual() {
 }
 
 async function conferirManual() {
-  if (selManual.size !== 15) { toast('Selecione exatamente 15 dezenas.', 'erro'); return; }
+  if (selManual.size !== 15) { toast('Marque exatamente 15 dezenas. Faltam ' + (15 - selManual.size) + '.', 'erro'); return; }
   const c = $('manConcurso').value ? Number($('manConcurso').value) : null;
-  if (c !== null && (!Number.isInteger(c) || c < 1)) { toast('Número de concurso inválido.', 'erro'); return; }
+  if (c !== null && (!Number.isInteger(c) || c < 1)) { toast('O número do concurso não é válido.', 'erro'); return; }
   const btn = $('btnManual');
   busy(btn, true, 'Conferindo...');
   try {
@@ -666,6 +838,9 @@ async function conferirManual() {
   finally { busy(btn, false); }
 }
 
+/* ================= INÍCIO ================= */
+marca($('lockMark'));
+marca($('headMark'));
 montarGrid();
 </script>
 </body>
