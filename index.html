@@ -51,7 +51,7 @@
   input[type=number]{font-family:'Courier New',Courier,monospace;font-weight:700}
   label.field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
 
-  /* ================= MARCA (volante 5x5 do grupo de 20) ================= */
+  /* ================= MARCA (volante 5x5 do grupo de 18) ================= */
   .mark{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;width:26px;height:26px;flex:none}
   .mark i{border-radius:50%;background:var(--line2)}
   .mark i.on{background:var(--acc)}
@@ -212,7 +212,7 @@
   <form class="lockcard" onsubmit="entrar(event)">
     <div class="mark big" id="lockMark"></div>
     <h1>Loto Fácil</h1>
-    <p>Seus 28 jogos fixos, conferidos sozinhos.</p>
+    <p>Seus jogos fixos, conferidos sozinhos.</p>
     <input type="password" id="senha" placeholder="Senha" autocomplete="off" inputmode="numeric" autofocus aria-label="Senha">
     <button class="btn-pri" id="btnEntrar" type="submit">Entrar</button>
     <div class="err" id="lockErr" role="alert"></div>
@@ -243,7 +243,7 @@
       <div class="panel" id="resCard"></div>
 
       <div class="panel" id="gamesCard" hidden>
-        <h2>Seus 28 jogos neste concurso</h2>
+        <h2 id="gamesTitle">Seus jogos neste concurso</h2>
         <p class="lead">Do que fez mais pontos para o que fez menos. Roxo cheio é acerto, cinza é dezena marcada que não saiu, e o contorno roxo é dezena sorteada que ficou fora daquele jogo.</p>
         <div class="games" id="gamesGrid"></div>
       </div>
@@ -331,12 +331,12 @@
     <!-- ================= MEUS JOGOS ================= -->
     <section id="tab-jogos" hidden>
       <div class="panel">
-        <h2>Seu grupo de 20 dezenas</h2>
-        <p class="lead">Os 28 jogos saem todos destas dezenas. Custo por concurso: <b class="num" id="custoTxt2">R$ 98,00</b>.</p>
+        <h2 id="poolTitle">Seu grupo de 18 dezenas</h2>
+        <p class="lead">Os seus jogos saem todos destas dezenas. Custo por sorteio: <b class="num" id="custoTxt2">R$ 49,00</b>. Você joga na segunda e na sexta.</p>
         <div class="vol lg" id="poolVol"></div>
       </div>
       <div class="panel">
-        <h2>Os 28 jogos</h2>
+        <h2 id="jogosTitle">Os seus jogos</h2>
         <p class="lead">Sempre os mesmos, toda semana.</p>
         <div class="games" id="jogosLista"></div>
       </div>
@@ -352,8 +352,8 @@
    ============================================================ */
 const API_URL = 'https://script.google.com/macros/s/AKfycbzbnMuCBKEPlZYzOvbij75W8FmnLik0gFkrBWo-6YxyZZhmlwJldDREEfNwFuoJAwuHmA/exec';
 
-/* Grupo de 20 usado só para a marca visual da tela de senha (os jogos vêm do servidor) */
-const MARCA = [1,2,3,4,6,8,9,11,12,13,14,15,17,18,19,21,22,23,24,25];
+/* Grupo de 18 usado só para a marca visual da tela de senha (os jogos vêm do servidor) */
+const MARCA = [1,2,3,4,6,8,9,11,12,13,14,15,17,18,19,21,22,25];
 
 /* Estado só em memória (nada em localStorage) */
 let SENHA = null, JOGOS = [], POOL = [], HIST = [], APOSTAS = [], PROXIMO = null;
@@ -503,6 +503,8 @@ function renderTudo() {
 
 function renderJogos() {
   const custo = brl(JOGOS.length * VALOR_APOSTA);
+  $('poolTitle').textContent = 'Seu grupo de ' + POOL.length + ' dezenas';
+  $('jogosTitle').textContent = 'Os ' + JOGOS.length + ' jogos';
   $('custoTxt').textContent = custo;
   $('custoTxt2').textContent = custo;
   $('poolVol').outerHTML = volante(POOL, null, 'lg').replace('<div class="vol lg"', '<div class="vol lg" id="poolVol"');
@@ -518,7 +520,7 @@ function renderVazio() {
       volante(POOL, null, 'lg') +
       '<div class="txt">' +
         '<h2>Confira o último sorteio</h2>' +
-        '<p>Busco o resultado na Caixa e comparo com os seus 28 jogos. Se o concurso estiver registrado em Apostas, a conferência fica salva no histórico.</p>' +
+        '<p>Busco o resultado na Caixa e comparo com os seus jogos. Se o concurso estiver registrado em Apostas, a conferência fica salva no histórico.</p>' +
         '<div class="search">' +
           '<button class="btn-pri" id="btnUltimo" onclick="buscar()">Buscar último resultado</button>' +
           '<input type="number" id="numConcurso" placeholder="Concurso" min="1" aria-label="Número do concurso">' +
@@ -621,6 +623,7 @@ function renderResultado(r, aviso, semRolar) {
       '<header><span>Jogo ' + dz(i + 1) + '</span><b>' + pontos[i] + '<small>pontos</small></b></header>' +
       volante(JOGOS[i], set) +
     '</div>').join('');
+  $('gamesTitle').textContent = 'Seus ' + JOGOS.length + ' jogos neste sorteio';
   $('gamesCard').hidden = false;
 
   if (!semRolar) $('resCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
