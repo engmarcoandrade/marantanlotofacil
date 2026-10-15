@@ -14,8 +14,9 @@
     --ok:#18794e; --ok-soft:#e4f4ec; --neg:#c42b1c; --neg-soft:#fbeae8;
     --warn:#8a5a00; --warn-soft:#fdf3dc;
     --cell:#f1eef5; --cell-ink:#6c6575; --miss:#d9d4e0;
-    --shadow:0 1px 2px rgba(45,20,55,.05), 0 6px 20px rgba(45,20,55,.05);
-    --r-lg:14px; --r-md:10px; --r-sm:7px;
+    --hero:#5b0a56; --hero-ink:#ffffff; --hero-muted:#e8cde5; --hero-neg:#ffb4a8; --hero-line:rgba(255,255,255,.18);
+    --shadow:0 1px 2px rgba(45,20,55,.05), 0 8px 24px rgba(45,20,55,.06);
+    --r-xl:20px; --r-lg:16px; --r-md:12px; --r-sm:8px;
   }
   body.dark{
     --canvas:#16131a; --paper:#211d26; --ink:#f1edf5; --muted:#a8a0b2;
@@ -24,7 +25,8 @@
     --ok:#5fd39a; --ok-soft:#163326; --neg:#ff7a6b; --neg-soft:#3a1c19;
     --warn:#f5c451; --warn-soft:#3a2f14;
     --cell:#2b2631; --cell-ink:#9a92a5; --miss:#4a4352;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+    --hero:#3a0d37;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.28);
   }
 
   /* ================= BASE ================= */
@@ -34,24 +36,30 @@
   .num{font-family:'Courier New',Courier,monospace;font-weight:700;letter-spacing:-.02em}
   [hidden]{display:none !important}
   h1,h2,h3,p{margin:0}
+  .r{text-align:right}
 
-  button{font:inherit;font-size:14px;cursor:pointer;border-radius:var(--r-sm);border:1px solid var(--line2);background:var(--paper);color:var(--ink);padding:9px 15px;transition:background .15s,border-color .15s,color .15s}
+  button{font:inherit;font-size:14px;cursor:pointer;border-radius:var(--r-sm);border:1px solid var(--line2);background:var(--paper);color:var(--ink);padding:9px 15px;transition:background .15s,border-color .15s,color .15s,box-shadow .15s,transform .1s}
   button:hover{border-color:var(--acc-line);background:var(--acc-soft)}
-  button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+  button:active{transform:translateY(1px)}
+  button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
   button:disabled{opacity:.55;cursor:wait}
   .btn-pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:700}
   .btn-pri:hover{background:var(--acc);border-color:var(--acc);filter:brightness(1.08)}
   .btn-danger{background:#c42b1c;border-color:#c42b1c;color:#fff;font-weight:700}
   .btn-danger:hover{background:#a8231a;border-color:#a8231a}
   .btn-quiet{border-color:transparent;background:transparent}
-  .btn-icon{padding:6px 9px;border-color:transparent;background:transparent;color:var(--muted)}
-  .btn-icon:hover{color:var(--neg);background:var(--neg-soft);border-color:transparent}
+  .btn-block{width:100%;padding:12px}
+  .danger-text{color:var(--neg)}
+  .danger-text:hover{background:var(--neg-soft);border-color:transparent}
 
-  input,select{font:inherit;font-size:15px;padding:9px 11px;border:1px solid var(--line2);border-radius:var(--r-sm);background:var(--paper);color:var(--ink);min-width:0}
+  input{font:inherit;font-size:15px;padding:10px 12px;border:1px solid var(--line2);border-radius:var(--r-sm);background:var(--paper);color:var(--ink);min-width:0}
   input[type=number]{font-family:'Courier New',Courier,monospace;font-weight:700}
-  label.field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
+  input[type=range]{padding:0;border:none;background:transparent;accent-color:var(--acc);height:28px}
+  .field{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted)}
 
-  /* ================= MARCA (volante 5x5 do grupo de 18) ================= */
+  @keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* ================= MARCA ================= */
   .mark{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;width:26px;height:26px;flex:none}
   .mark i{border-radius:50%;background:var(--line2)}
   .mark i.on{background:var(--acc)}
@@ -59,7 +67,7 @@
 
   /* ================= TELA DE SENHA ================= */
   #lock{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
-  .lockcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:36px 28px 28px;width:100%;max-width:360px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;text-align:center}
+  .lockcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-xl);padding:40px 30px 30px;width:100%;max-width:370px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;text-align:center}
   .lockcard h1{font-size:26px;margin:18px 0 4px;letter-spacing:-.01em}
   .lockcard p{color:var(--muted);font-size:14px;margin-bottom:24px}
   .lockcard input{width:100%;text-align:center;font-size:20px;letter-spacing:6px;margin-bottom:12px;padding:12px}
@@ -67,31 +75,94 @@
   .lockcard button{width:100%;padding:12px}
   .err{color:var(--neg);font-size:13px;min-height:18px;margin-top:12px;line-height:1.4}
 
-  /* ================= CABEÇALHO E ABAS ================= */
-  header{background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
-  .bar{max-width:1080px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:10px}
-  .brand{display:flex;align-items:center;gap:11px;flex:1;min-width:0}
+  /* ================= CABEÇALHO ================= */
+  header.top{background:var(--paper);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+  .bar{max-width:1120px;margin:0 auto;padding:10px 16px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+  .brand{display:flex;align-items:center;gap:11px;min-width:0}
   .brand h1{font-size:19px;letter-spacing:-.01em;white-space:nowrap}
-  nav{max-width:1080px;margin:0 auto;padding:0 16px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
-  nav::-webkit-scrollbar{display:none}
-  nav button{border:none;border-radius:0;background:transparent;color:var(--muted);padding:10px 14px 12px;border-bottom:3px solid transparent;white-space:nowrap;font-size:14px}
-  nav button:hover{background:transparent;color:var(--ink)}
-  nav button.on{color:var(--acc);border-bottom-color:var(--acc);font-weight:700}
+  .acoes{display:flex;gap:8px;justify-self:end;align-items:center}
+  nav.seg{display:inline-flex;background:var(--cell);border-radius:999px;padding:4px;gap:2px}
+  nav.seg button{border:none;border-radius:999px;padding:8px 22px;background:transparent;color:var(--muted);font-weight:700;font-size:14px}
+  nav.seg button:hover{color:var(--ink);background:transparent}
+  nav.seg button.on{background:var(--paper);color:var(--acc);box-shadow:0 1px 3px rgba(45,20,55,.16)}
+  nav.seg button.dirty::after{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--acc);margin-left:7px;vertical-align:middle}
 
-  main{max-width:1080px;margin:0 auto;padding:20px 16px 56px;display:flex;flex-direction:column;gap:16px}
-  section{display:flex;flex-direction:column;gap:16px}
+  main{max-width:1120px;margin:0 auto;padding:22px 16px 60px}
+  section:not([hidden]){animation:entra .22s ease-out}
 
-  .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow)}
-  .panel > h2{font-size:17px;margin-bottom:4px}
-  .panel > .lead{color:var(--muted);font-size:14px;margin-bottom:16px}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;box-shadow:var(--shadow)}
+  .panel h2{font-size:17px}
+  .lead{color:var(--muted);font-size:14px;max-width:76ch}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .muted{color:var(--muted);font-size:13px}
+  h3.sub{font-size:15px;margin:24px 0 10px}
 
-  .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:700;white-space:nowrap}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:700;white-space:nowrap;font-family:Arial,sans-serif;letter-spacing:0}
   .b-ok{background:var(--ok-soft);color:var(--ok)}
   .b-warn{background:var(--warn-soft);color:var(--warn)}
   .b-acc{background:var(--acc-soft);color:var(--acc)}
   .b-mut{background:var(--cell);color:var(--muted)}
+  .neg{color:var(--neg)}
+
+  /* ================= APOSTAS: TOPO ================= */
+  .topo{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr);gap:16px;margin-bottom:16px}
+
+  .hero{position:relative;overflow:hidden;background:var(--hero);color:var(--hero-ink);border-radius:var(--r-xl);padding:24px 24px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+  .hero::after{content:'';position:absolute;right:-18px;top:-18px;width:150px;height:150px;opacity:.09;pointer-events:none;
+    background-image:radial-gradient(circle,#fff 9px,transparent 10px);background-size:30px 30px}
+  .hero small{display:block;color:var(--hero-muted);font-size:13px}
+  .hero-saldo{font-family:'Courier New',Courier,monospace;font-weight:700;font-size:48px;line-height:1.05;letter-spacing:-.04em;margin:6px 0 6px}
+  .hero-saldo .hneg{color:var(--hero-neg)}
+  .hero-sub{color:var(--hero-muted);font-size:13.5px;max-width:62ch}
+  .hero-chart{position:relative;flex:1;min-height:118px;margin:16px 0 6px}
+  .hero-chart svg{display:block;width:100%;height:100%;overflow:visible;touch-action:pan-y}
+  .hero-note{color:var(--hero-muted);font-size:13px;padding-top:42px}
+  .zero-lbl{position:absolute;left:0;transform:translateY(-50%);font-size:11px;color:var(--hero-muted);font-family:'Courier New',monospace;font-weight:700;line-height:1}
+  .tip{position:absolute;top:0;pointer-events:none;background:var(--paper);color:var(--ink);border-radius:var(--r-sm);padding:7px 10px;font-size:12.5px;box-shadow:0 6px 18px rgba(0,0,0,.25);white-space:nowrap;transform:translate(-50%,-108%);z-index:3}
+  .tip b{font-family:'Courier New',monospace}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--hero-line);margin-top:8px;padding-top:14px}
+  .kpis > div{padding:0 14px;border-left:1px solid var(--hero-line)}
+  .kpis > div:first-child{padding-left:0;border-left:none}
+  .kpis b{display:block;font-family:'Courier New',Courier,monospace;font-size:19px;letter-spacing:-.02em;margin-top:4px;white-space:nowrap}
+
+  .next{display:flex;flex-direction:column;gap:14px}
+  .next-head small{display:block;color:var(--muted);font-size:13px}
+  .next-num{font-family:'Courier New',Courier,monospace;font-weight:700;font-size:44px;line-height:1.05;letter-spacing:-.03em;color:var(--acc)}
+  .next-when{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14.5px;margin-top:2px}
+  .next-note{font-size:13px;color:var(--muted);margin-top:8px}
+  .next-note.alerta{color:var(--warn)}
+  .next-msg{font-size:14px;color:var(--muted);padding:6px 0}
+  .planchip{padding:10px 14px;border-radius:var(--r-sm);background:var(--cell);font-size:14px}
+  .tiny{font-size:12.5px;color:var(--muted);line-height:1.45}
+
+  /* ================= LISTA ================= */
+  .list-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .filtros{display:inline-flex;background:var(--cell);border-radius:999px;padding:3px;gap:2px}
+  .filtros button{border:none;border-radius:999px;padding:6px 13px;font-size:13px;background:transparent;color:var(--muted)}
+  .filtros button:hover{background:transparent;color:var(--ink)}
+  .filtros button.on{background:var(--paper);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(45,20,55,.14)}
+  .filtros .cnt{font-family:'Courier New',monospace;font-weight:700;color:var(--muted);margin-left:2px}
+  #syncInfo{margin:6px 0 14px}
+
+  .ap-head,.ap-row{display:grid;grid-template-columns:84px 104px minmax(150px,1fr) 104px 150px 116px 18px;gap:10px;align-items:center}
+  .ap-head{padding:0 16px 8px;font-size:12.5px;color:var(--muted);font-weight:700}
+  .ap{position:relative;border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:8px;background:var(--paper);overflow:hidden;transition:border-color .15s,box-shadow .15s}
+  .ap::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--line2)}
+  .ap.st-wait::before{background:var(--acc-line)}
+  .ap.st-win::before{background:var(--acc)}
+  .ap:hover{border-color:var(--line2)}
+  .ap.open{border-color:var(--acc-line);box-shadow:var(--shadow)}
+  .ap-row{width:100%;text-align:left;border:none;border-radius:0;background:transparent;padding:14px 16px;font-size:14px;color:var(--ink)}
+  .ap-row:hover{background:var(--cell);border-color:transparent}
+  .ap.open .ap-row{background:var(--cell)}
+  .a-conc{font-size:17px}
+  .chev{color:var(--muted);text-align:right;transition:transform .2s}
+  .ap.open .chev{transform:rotate(180deg)}
+  .lbl{display:none;font-style:normal;color:var(--muted);font-family:Arial,sans-serif;font-weight:400;font-size:12px;letter-spacing:0}
+  .ap-det{padding:22px 18px 26px;border-top:1px solid var(--line)}
+  .ap-det.anim{animation:entra .22s ease-out}
+  .wait p{margin-bottom:12px;max-width:72ch}
+  .vazio{padding:28px 8px;text-align:center;color:var(--muted);font-size:14px}
 
   /* ================= VOLANTES ================= */
   .vol{display:grid;grid-template-columns:repeat(5,var(--c));gap:var(--g);--c:22px;--g:4px}
@@ -103,106 +174,147 @@
   .vol.lg{--c:46px;--g:7px}
   .vol.lg span{font-size:17px}
 
-  /* ================= RESULTADO ================= */
-  .hero{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center}
-  .hero-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-  .hero-head h2{font-size:22px;letter-spacing:-.01em}
-  .hero-meta{color:var(--muted);font-size:13.5px;margin-top:4px}
-  .verdict{margin:18px 0 6px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-  .verdict .big{font-family:'Courier New',Courier,monospace;font-weight:700;font-size:56px;line-height:1;letter-spacing:-.04em;color:var(--ink)}
+  .det{display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:start}
+  .hero-meta{color:var(--muted);font-size:13.5px}
+  .verdict{margin:14px 0 4px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .verdict .big{font-family:'Courier New',Courier,monospace;font-weight:700;font-size:52px;line-height:1;letter-spacing:-.04em}
   .verdict.win .big{color:var(--acc)}
-  .verdict .lbl{font-size:16px;color:var(--muted)}
-  .faixas{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:18px 0 14px}
-  .faixas div{border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 10px;text-align:center}
+  .verdict .lbl2{font-size:15.5px;color:var(--muted)}
+  .faixas{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:16px 0 14px;max-width:520px}
+  .faixas div{border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 6px;text-align:center}
   .faixas div.got{border-color:var(--acc-line);background:var(--acc-soft)}
   .faixas small{display:block;font-size:12px;color:var(--muted)}
   .faixas b{font-family:'Courier New',Courier,monospace;font-size:22px}
   .faixas div.got b{color:var(--acc)}
-  .hero-foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .total{font-size:14px;color:var(--muted)}
-  .total b{font-family:'Courier New',Courier,monospace;font-size:18px;color:var(--ink)}
+  .premio-ed{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:6px}
+  .premio-ed input{width:170px}
 
   .games{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px}
   .game{border:1px solid var(--line);border-radius:var(--r-md);padding:12px;display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--paper)}
   .game.prem{border-color:var(--acc-line);background:var(--acc-soft)}
-  .game header{all:unset;display:flex;justify-content:space-between;align-items:baseline;width:100%}
+  .game header{display:flex;justify-content:space-between;align-items:baseline;width:100%}
   .game header span{font-size:13px;color:var(--muted)}
   .game header b{font-family:'Courier New',Courier,monospace;font-size:18px}
   .game.prem header b{color:var(--acc)}
   .game header b small{font-family:Arial,sans-serif;font-size:11px;font-weight:400;color:var(--muted);margin-left:3px}
 
-  .empty{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
-  .empty .txt{flex:1;min-width:220px}
-  .empty h2{font-size:20px;margin-bottom:6px;letter-spacing:-.01em}
-  .empty p{color:var(--muted);font-size:14px;margin-bottom:16px;max-width:52ch}
-
-  .search{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .search input{width:130px}
-
-  /* manual */
   .pick{display:grid;grid-template-columns:repeat(5,48px);gap:7px}
   .pick button{padding:0;height:48px;border-radius:50%;font-family:'Courier New',Courier,monospace;font-weight:700;font-size:16px;background:var(--cell);border-color:transparent;color:var(--muted)}
   .pick button:hover{background:var(--acc-soft);color:var(--acc)}
   .pick button.sel{background:var(--acc);color:var(--acc-ink)}
-  .manual{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start}
-  .counter{font-family:'Courier New',Courier,monospace;font-weight:700;font-size:36px;line-height:1}
-  .counter small{font-size:16px;color:var(--muted)}
+  .pick.sm{grid-template-columns:repeat(5,42px);gap:6px}
+  .pick.sm button{height:42px;font-size:15px}
+  .manual-box{margin-top:20px;padding:16px;border:1px dashed var(--acc-line);border-radius:var(--r-md);background:var(--acc-soft);animation:entra .2s ease-out}
+  .manual-box > p{margin-bottom:12px}
 
-  /* ================= TABELAS ================= */
-  .tablewrap{overflow-x:auto;margin:0 -4px}
+  /* ================= PLANO ================= */
+  .plano{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
+  .passos{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .step-h{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+  .step-n{flex:none;width:32px;height:32px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:flex;align-items:center;justify-content:center;font-family:'Courier New',monospace;font-weight:700;font-size:16px}
+  .step-h .lead{margin-top:3px}
+  .plan-top{display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:start}
+  .plan-side{display:flex;flex-direction:column;gap:12px;max-width:44ch}
+  .counter{font-family:'Courier New',Courier,monospace;font-weight:700;font-size:40px;line-height:1}
+  .counter small{font-family:Arial,sans-serif;font-weight:400;font-size:16px;color:var(--muted)}
+  .formplan{display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px 18px;align-items:end}
+  .formplan .full{grid-column:1/-1}
+  .formplan input[type=number]{width:100%}
+  .range-row{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:12px;align-items:center}
+  .dias{display:flex;gap:6px;flex-wrap:wrap}
+  .dias button{padding:8px 14px;border-radius:999px}
+  .dias button.on{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:700}
+  .calc{margin-top:18px;border:1px solid var(--acc-line);background:var(--acc-soft);border-radius:var(--r-md);padding:16px 18px}
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .calc small{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}
+  .calc b{font-family:'Courier New',Courier,monospace;font-size:28px;display:block;line-height:1.15;letter-spacing:-.02em}
+  .calc .det-txt{font-size:13.5px}
+  .calc-erro{color:var(--neg);font-weight:700}
+  .calc-nota{margin-top:12px;font-size:13px;color:var(--muted)}
+
+  .resumo{position:sticky;top:96px;display:flex;flex-direction:column;gap:14px}
+  .resumo-card{border-color:var(--acc-line)}
+  .resumo-card > small{display:block;color:var(--muted);font-size:13px;margin-bottom:12px}
+  .resumo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+  .resumo-grid > div{background:var(--cell);border-radius:var(--r-sm);padding:10px 10px}
+  .resumo-grid b{display:block;font-family:'Courier New',Courier,monospace;font-size:22px;letter-spacing:-.02em;line-height:1.1}
+  .resumo-grid span{font-size:12px;color:var(--muted)}
+  .resumo table{font-size:13px}
+  .resumo th,.resumo td{padding:8px 3px}
+  .resumo td{white-space:nowrap}
+  .resumo td.num{letter-spacing:-.04em}
+
   table{width:100%;border-collapse:collapse;font-size:14px}
   th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
-  th{font-size:12.5px;color:var(--muted);font-weight:700;border-bottom-color:var(--line2)}
-  tbody tr:last-child td{border-bottom:none}
+  th{font-size:12px;color:var(--muted);font-weight:700;border-bottom-color:var(--line2)}
   td.r,th.r{text-align:right}
-  td.num{white-space:nowrap}
-  tr.prem td{background:var(--acc-soft)}
-  .neg{color:var(--neg)}
+  tbody tr:last-child td{border-bottom:none}
 
-  /* ================= FINANCEIRO ================= */
-  .saldo{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:12px}
-  .saldo > div{border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px}
-  .saldo small{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-  .saldo b{font-family:'Courier New',Courier,monospace;font-size:21px;letter-spacing:-.02em}
-  .saldo .main{background:var(--cell);border-color:transparent}
-  .saldo .main b{font-size:32px}
-  .formfin{display:grid;grid-template-columns:140px 170px 130px 1fr 140px;gap:10px;align-items:end}
-  .formfin input,.formfin select{width:100%}
-  .chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:14px;color:var(--muted)}
-  .chk input{width:17px;height:17px;accent-color:var(--acc)}
+  .savebar{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+  .savebar span{font-size:13.5px}
+  .savebar .row button{flex:1}
 
   /* ================= TOAST ================= */
-  #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:var(--r-md);font-size:14px;max-width:min(560px,92vw);z-index:50;box-shadow:0 8px 28px rgba(0,0,0,.25);line-height:1.4}
+  #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:var(--r-md);font-size:14px;max-width:min(560px,92vw);z-index:50;box-shadow:0 8px 28px rgba(0,0,0,.25);line-height:1.4;animation:sobe .2s ease-out}
+  @keyframes sobe{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
   #toast.erro{background:#c42b1c;color:#fff}
   #toast.ok{background:#18794e;color:#fff}
 
   /* ================= RESPONSIVO ================= */
+  @media (max-width:980px){
+    .topo{grid-template-columns:1fr}
+    .plano{grid-template-columns:1fr}
+    .resumo{position:static}
+    .savebar{position:fixed;left:12px;right:12px;bottom:12px;z-index:30;margin:0;background:var(--paper);border:1px solid var(--acc-line);border-radius:var(--r-lg);padding:12px 14px;box-shadow:0 10px 30px rgba(45,20,55,.25)}
+    main.salvando{padding-bottom:150px}
+  }
   @media (max-width:860px){
-    .hero,.manual{grid-template-columns:1fr;gap:22px}
-    .hero .vol.lg{justify-self:center}
-    .formfin{grid-template-columns:1fr 1fr}
-    .formfin .wide{grid-column:1/-1}
-    .saldo{grid-template-columns:1fr 1fr}
-    .saldo .main{grid-column:1/-1}
+    .det,.plan-top{grid-template-columns:1fr;gap:20px}
+    .det .vol.lg{justify-self:center}
+    .kpis{grid-template-columns:1fr 1fr;row-gap:14px}
+    .kpis > div:nth-child(3){padding-left:0;border-left:none}
+  }
+  @media (max-width:760px){
+    .ap-head{display:none}
+    .ap-row{grid-template-columns:1fr auto;grid-template-areas:"conc res" "data premio" "custo saldo";row-gap:6px}
+    .a-conc{grid-area:conc}
+    .a-res{grid-area:res;justify-self:end}
+    .a-data{grid-area:data}
+    .a-premio{grid-area:premio}
+    .a-custo{grid-area:custo;text-align:left}
+    .a-saldo{grid-area:saldo}
+    .chev{display:none}
+    .lbl{display:inline}
+    .bar{grid-template-columns:1fr auto;row-gap:10px}
+    .bar nav.seg{grid-row:2;grid-column:1/-1;display:flex}
+    .bar nav.seg button{flex:1}
   }
   @media (max-width:560px){
     body{font-size:14px}
     .bar{padding:10px 12px;gap:6px}
     .brand h1{font-size:17px}
-    .bar button{padding:8px 10px;font-size:13px}
+    .acoes button{padding:8px 10px;font-size:13px}
     main{padding:14px 12px 48px}
     .panel{padding:16px}
+    .hero{padding:20px 18px 16px}
+    .hero-saldo{font-size:38px}
+    .kpis b{font-size:16px}
     .vol.lg{--c:40px;--g:6px}
-    .verdict .big{font-size:46px}
-    .faixas{grid-template-columns:repeat(5,1fr);gap:4px}
+    .verdict .big{font-size:44px}
+    .faixas{gap:4px}
     .faixas div{padding:6px 2px}
     .faixas b{font-size:18px}
     .games{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
     .vol{--c:19px;--g:3px}
-    .pick{grid-template-columns:repeat(5,1fr)}
-    .pick button{height:auto;aspect-ratio:1}
+    .pick,.pick.sm{grid-template-columns:repeat(5,1fr)}
+    .pick button,.pick.sm button{height:auto;aspect-ratio:1}
+    .calc-grid{grid-template-columns:1fr}
+    .formplan{grid-template-columns:1fr}
+    .list-head .row{width:100%}
+    .filtros{flex:1}
+    .filtros button{flex:1;padding:6px 6px}
   }
-  @media (prefers-reduced-motion:reduce){*{transition:none !important;scroll-behavior:auto !important}}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;scroll-behavior:auto !important}}
 </style>
 </head>
 <body>
@@ -212,7 +324,7 @@
   <form class="lockcard" onsubmit="entrar(event)">
     <div class="mark big" id="lockMark"></div>
     <h1>Loto Fácil</h1>
-    <p>Seus jogos fixos, conferidos sozinhos.</p>
+    <p>Suas apostas, conferidas sozinhas.</p>
     <input type="password" id="senha" placeholder="Senha" autocomplete="off" inputmode="numeric" autofocus aria-label="Senha">
     <button class="btn-pri" id="btnEntrar" type="submit">Entrar</button>
     <div class="err" id="lockErr" role="alert"></div>
@@ -221,124 +333,109 @@
 
 <!-- ================= APP ================= -->
 <div id="app" hidden>
-  <header>
+  <header class="top">
     <div class="bar">
       <div class="brand"><div class="mark" id="headMark"></div><h1>Loto Fácil</h1></div>
-      <button class="btn-quiet" id="btnTema" onclick="alternarTema()" title="Alternar modo claro e escuro" aria-label="Alternar tema">🌙</button>
-      <button onclick="sair()">Sair</button>
-      <button class="btn-danger" onclick="panico()" title="Fechar agora (ou ESC duas vezes)">Fechar</button>
+      <nav class="seg" id="tabs" aria-label="Seções">
+        <button data-tab="apostas" class="on">Apostas</button>
+        <button data-tab="plano" id="tabPlano">Plano</button>
+      </nav>
+      <div class="acoes">
+        <button class="btn-quiet" id="btnTema" onclick="alternarTema()" title="Alternar modo claro e escuro" aria-label="Alternar tema">🌙</button>
+        <button onclick="sair()">Sair</button>
+        <button class="btn-danger" onclick="panico()" title="Fechar agora (ou ESC duas vezes)">Fechar</button>
+      </div>
     </div>
-    <nav id="tabs">
-      <button data-tab="conferir" class="on">Conferir</button>
-      <button data-tab="apostas">Apostas</button>
-      <button data-tab="historico">Histórico</button>
-      <button data-tab="financeiro">Financeiro</button>
-      <button data-tab="jogos">Meus jogos</button>
-    </nav>
   </header>
 
-  <main>
-    <!-- ================= CONFERIR ================= -->
-    <section id="tab-conferir">
-      <div class="panel" id="resCard"></div>
+  <main id="main">
+    <!-- ================= APOSTAS ================= -->
+    <section id="tab-apostas">
+      <div class="topo">
+        <div class="hero">
+          <small>Saldo da conta corrente</small>
+          <div class="hero-saldo" id="heroSaldo">R$ 0,00</div>
+          <p class="hero-sub" id="contaResumo"></p>
+          <div class="hero-chart" id="heroChart"></div>
+          <div class="kpis" id="conta"></div>
+        </div>
 
-      <div class="panel" id="gamesCard" hidden>
-        <h2 id="gamesTitle">Seus jogos neste concurso</h2>
-        <p class="lead">Do que fez mais pontos para o que fez menos. Roxo cheio é acerto, cinza é dezena marcada que não saiu, e o contorno roxo é dezena sorteada que ficou fora daquele jogo.</p>
-        <div class="games" id="gamesGrid"></div>
+        <div class="panel next">
+          <div class="next-head" id="proxInfo"><p class="next-msg">Buscando o próximo sorteio na Caixa...</p></div>
+          <label class="field">Concurso do seu comprovante<input type="number" id="novoConc" min="1" placeholder="Número"></label>
+          <div class="planchip" id="planChip"></div>
+          <button class="btn-pri btn-block" id="btnRegistrar" onclick="registrar()">Registrar aposta</button>
+          <p class="tiny">Registre logo depois de apostar. Cada aposta guarda os jogos com que foi feita, então mudar o plano depois não altera as apostas já registradas.</p>
+        </div>
       </div>
 
       <div class="panel">
-        <h2>Conferir na mão</h2>
-        <p class="lead">Para quando a busca automática falhar. Toque nas 15 dezenas sorteadas.</p>
-        <div class="manual">
-          <div class="pick" id="grid25"></div>
-          <div style="display:flex;flex-direction:column;gap:16px">
-            <div><div class="counter"><span id="manCont">0</span><small> de 15</small></div><div class="muted" style="margin-top:4px">dezenas marcadas</div></div>
-            <label class="field" style="max-width:220px">Número do concurso
-              <input type="number" id="manConcurso" min="1" placeholder="Opcional">
-            </label>
-            <p class="muted" style="max-width:40ch">Com o número do concurso, a conferência fica salva no histórico. Sem ele, aparece só na tela.</p>
-            <div class="row">
-              <button onclick="limparManual()">Limpar</button>
-              <button class="btn-pri" id="btnManual" onclick="conferirManual()">Conferir</button>
-            </div>
+        <div class="list-head">
+          <h2>Suas apostas</h2>
+          <div class="row">
+            <div class="filtros" id="filtros" role="group" aria-label="Filtrar apostas"></div>
+            <button id="btnSync" onclick="sincronizar()">Atualizar resultados</button>
           </div>
         </div>
+        <p class="muted" id="syncInfo"></p>
+        <div id="lista"></div>
       </div>
     </section>
 
-    <!-- ================= APOSTAS ================= -->
-    <section id="tab-apostas" hidden>
-      <div class="panel">
-        <h2>Registrar aposta</h2>
-        <p class="lead">Só os concursos registrados aqui entram na conferência automática e no e-mail. <span id="sugProx"></span></p>
-        <div class="row" style="align-items:flex-end">
-          <label class="field">Concurso<input type="number" id="apoConcurso" min="1" style="width:140px"></label>
-          <label class="field" title="Use mais de 1 para a teimosinha">Concursos seguidos<input type="number" id="apoQtd" value="1" min="1" max="52" style="width:140px"></label>
-          <button class="btn-pri" id="btnApo" onclick="registrarAposta()">Registrar aposta</button>
+    <!-- ================= PLANO ================= -->
+    <section id="tab-plano" hidden>
+      <div class="plano">
+        <div class="passos">
+          <div class="panel">
+            <div class="step-h"><span class="step-n">1</span><div><h2>Escolha as dezenas</h2><p class="lead">Toque para marcar. Todos os jogos saem só destas dezenas.</p></div></div>
+            <div class="plan-top">
+              <div class="pick" id="planPick"></div>
+              <div class="plan-side">
+                <div class="counter"><span id="pCount">0</span><small> dezenas</small></div>
+                <p class="muted" id="pCountInfo"></p>
+                <div class="row"><button onclick="limparDezenas()">Limpar</button><button onclick="todasDezenas()">Marcar todas</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="step-h"><span class="step-n">2</span><div><h2>Defina quanto apostar</h2><p class="lead">Eu calculo quantos jogos cabem em cada sorteio.</p></div></div>
+            <div class="formplan">
+              <label class="field">Valor de cada aposta (R$)<input type="number" id="pUnit" min="0.01" step="0.01"></label>
+              <div class="field"><span>Quanto gastar por semana (R$)</span>
+                <div class="range-row"><input type="range" id="pSemanaR" min="10" max="500" step="5" aria-label="Orçamento semanal"><input type="number" id="pSemana" min="1" step="1" aria-label="Orçamento semanal em reais"></div>
+              </div>
+              <div class="field full"><span>Dias de jogo</span><div class="dias" id="pDias"></div></div>
+            </div>
+            <div class="calc" id="pCalc"></div>
+          </div>
+
+          <div class="panel">
+            <div class="step-h" style="margin-bottom:6px"><span class="step-n">3</span><div style="flex:1"><div class="list-head"><h2 id="pJogosTitle">Os jogos</h2><button id="btnOutra" onclick="outraCombinacao()">Gerar outra combinação</button></div><p class="lead" id="pJogosInfo"></p></div></div>
+            <div class="games" id="pJogos" style="margin-top:14px"></div>
+          </div>
         </div>
-        <label class="chk"><input type="checkbox" id="apoDeb" checked> Lançar o débito de <b class="num" id="custoTxt">R$ 98,00</b> por concurso no Financeiro</label>
-      </div>
-      <div class="panel">
-        <h2>Concursos registrados</h2>
-        <div class="tablewrap" id="apoLista" style="margin-top:10px"></div>
-      </div>
-    </section>
 
-    <!-- ================= HISTÓRICO ================= -->
-    <section id="tab-historico" hidden>
-      <div class="panel">
-        <h2>Histórico de conferências</h2>
-        <p class="lead">Linhas em destaque tiveram ao menos um jogo premiado.</p>
-        <div class="tablewrap" id="histLista"></div>
-      </div>
-    </section>
-
-    <!-- ================= FINANCEIRO ================= -->
-    <section id="tab-financeiro" hidden>
-      <div class="panel">
-        <h2>Conta corrente</h2>
-        <p class="lead">Tudo o que saiu em apostas e tudo o que entrou em prêmios.</p>
-        <div class="saldo" id="finResumo"></div>
-      </div>
-      <div class="panel">
-        <h2>Novo lançamento</h2>
-        <p class="lead">Prêmios não entram sozinhos: lance o valor que você realmente recebeu.</p>
-        <div class="formfin">
-          <label class="field">Data<input type="date" id="finData"></label>
-          <label class="field">Tipo
-            <select id="finTipo">
-              <option value="Aposta">Aposta (saída)</option>
-              <option value="Prêmio">Prêmio (entrada)</option>
-            </select>
-          </label>
-          <label class="field">Concurso<input type="number" id="finConc" min="1" placeholder="Opcional"></label>
-          <label class="field wide">Descrição<input type="text" id="finDesc" maxlength="200" placeholder="Ex.: prêmio do concurso 3520"></label>
-          <label class="field">Valor (R$)<input type="number" id="finValor" min="0.01" step="0.01" placeholder="0,00"></label>
-        </div>
-        <div class="row" style="margin-top:14px">
-          <button onclick="limparFin()">Limpar</button>
-          <button class="btn-pri" id="btnFin" onclick="lancar()">Lançar</button>
-        </div>
-      </div>
-      <div class="panel">
-        <h2>Extrato</h2>
-        <div class="tablewrap" id="finLista" style="margin-top:10px"></div>
-      </div>
-    </section>
-
-    <!-- ================= MEUS JOGOS ================= -->
-    <section id="tab-jogos" hidden>
-      <div class="panel">
-        <h2 id="poolTitle">Seu grupo de 18 dezenas</h2>
-        <p class="lead">Os seus jogos saem todos destas dezenas. Custo por sorteio: <b class="num" id="custoTxt2">R$ 49,00</b>. Você joga na segunda e na sexta.</p>
-        <div class="vol lg" id="poolVol"></div>
-      </div>
-      <div class="panel">
-        <h2 id="jogosTitle">Os seus jogos</h2>
-        <p class="lead">Sempre os mesmos, toda semana.</p>
-        <div class="games" id="jogosLista"></div>
+        <aside class="resumo">
+          <div class="panel resumo-card">
+            <small>Resumo do plano</small>
+            <div class="resumo-grid">
+              <div><b id="sDez">0</b><span>dezenas</span></div>
+              <div><b id="sJog">0</b><span>jogos por sorteio</span></div>
+              <div><b id="sSem">—</b><span>por semana</span></div>
+            </div>
+            <h3 class="sub" style="margin-top:18px">Suas chances</h3>
+            <div id="pChances"></div>
+            <p class="muted" id="pRetorno" style="margin-top:12px"></p>
+            <div class="savebar" id="saveBar" hidden>
+              <span>Você mudou o plano. As apostas já registradas não mudam.</span>
+              <div class="row">
+                <button onclick="descartarPlano()">Descartar</button>
+                <button class="btn-pri" id="btnSalvarPlano" onclick="salvarPlano()">Salvar plano</button>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
   </main>
@@ -352,26 +449,41 @@
    ============================================================ */
 const API_URL = 'https://script.google.com/macros/s/AKfycbzbnMuCBKEPlZYzOvbij75W8FmnLik0gFkrBWo-6YxyZZhmlwJldDREEfNwFuoJAwuHmA/exec';
 
-/* Grupo de 18 usado só para a marca visual da tela de senha (os jogos vêm do servidor) */
-const MARCA = [1,2,3,4,6,8,9,11,12,13,14,15,17,18,19,21,22,25];
+const MARCA_PADRAO = [1,2,3,4,6,8,9,11,12,13,14,15,17,18,19,21,22,25];
+const DIAS = [['seg','Seg'],['ter','Ter'],['qua','Qua'],['qui','Qui'],['sex','Sex'],['sab','Sáb'],['dom','Dom']];
+const DIA_NOME = {seg:'segunda',ter:'terça',qua:'quarta',qui:'quinta',sex:'sexta',sab:'sábado',dom:'domingo'};
+const DIA_IDX = ['dom','seg','ter','qua','qui','sex','sab'];   // ordem do getDay()
+const TOTAL_COMB = 3268760;                                    // C(25,15)
+const PREMIO_MEDIO = {11:7, 12:14, 13:35, 14:1700, 15:1500000}; // 14 e 15 variam: médias típicas
 
 /* Estado só em memória (nada em localStorage) */
-let SENHA = null, JOGOS = [], POOL = [], HIST = [], APOSTAS = [], PROXIMO = null;
-let FIN = [], VALOR_APOSTA = 3.5, ULTIMO_RES = null;
-const selManual = new Set();
+let SENHA = null, PLANO = null, APOSTAS = [], PROXIMO = null, ULTIMO = null, MAX_JOGOS = 200;
+let SYNC = 'idle';           // idle | busy | ok | erro
+let EDIT = null;             // plano em edição
+let FILTRO = 'todas';
+let saldoMostrado = null;
+let recemAberta = null;
+const abertas = new Set();   // apostas expandidas
+const manual = new Map();    // id da aposta -> Set de dezenas marcadas
 
 /* ================= UTILITÁRIOS ================= */
 const $ = id => document.getElementById(id);
 const dz = n => String(n).padStart(2, '0');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const brl = v => Number(v).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+const nf = v => Number(v).toLocaleString('pt-BR');
 const plural = (n, s, p) => n + ' ' + (n === 1 ? s : p);
+const moeda = v => v < 0 ? '<span class="neg">' + brl(v) + '</span>' : brl(v);
+const ordenar = a => a.slice().sort((x, y) => x - y);
+const semMovimento = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let toastTimer = null;
 function toast(msg, tipo) {
   const t = $('toast');
+  t.hidden = true;
   t.textContent = msg;
   t.className = tipo || '';
+  void t.offsetWidth;
   t.hidden = false;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.hidden = true, tipo === 'erro' ? 6500 : 3500);
@@ -399,12 +511,145 @@ async function api(acao, dados) {
   return j;
 }
 
-/* ================= VOLANTES ================= */
-function marca(el) {
-  el.innerHTML = Array.from({length:25}, (_, i) => '<i' + (MARCA.includes(i + 1) ? ' class="on"' : '') + '></i>').join('');
+/* ================= MATEMÁTICA ================= */
+function comb(n, k) {
+  if (k < 0 || k > n) return 0;
+  k = Math.min(k, n - k);
+  let r = 1;
+  for (let i = 1; i <= k; i++) r = r * (n - k + i) / i;
+  return Math.round(r);
 }
 
-/* jogo: dezenas marcadas · sorteio: Set das sorteadas (opcional) */
+function rng(seed) {          // gerador determinístico (mulberry32)
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function pop(x) {
+  x = x - ((x >>> 1) & 0x55555555);
+  x = (x & 0x33333333) + ((x >>> 2) & 0x33333333);
+  return (((x + (x >>> 4)) & 0x0F0F0F0F) * 0x01010101) >>> 24;
+}
+
+function subconjuntos(arr, k) {
+  const out = [];
+  const rec = (st, sel) => {
+    if (sel.length === k) { out.push(sel.slice()); return; }
+    for (let i = st; i <= arr.length - (k - sel.length); i++) { sel.push(arr[i]); rec(i + 1, sel); sel.pop(); }
+  };
+  rec(0, []);
+  return out;
+}
+
+/* Monta G jogos equilibrados a partir das dezenas escolhidas */
+const cacheJogos = new Map();
+function gerarJogos(dezenas, G, seed) {
+  const dzs = ordenar([...dezenas]);
+  const N = dzs.length, k = N - 15;
+  const chave = dzs.join(',') + '|' + G + '|' + seed;
+  if (cacheJogos.has(chave)) return cacheJogos.get(chave);
+  let res = [];
+  if (N >= 15 && G >= 1) {
+    const total = comb(N, 15);
+    if (k === 0) res = [dzs.slice()];
+    else if (total <= G) res = subconjuntos(dzs, k).map(o => dzs.filter(x => !o.includes(x)));
+    else {
+      const r = rng(seed * 7919 + N * 131 + G * 17 + 1);
+      let melhor = null, melhorNota = Infinity;
+      const tentativas = Math.max(12, Math.min(250, Math.floor(80000 / (G * G * k + 1))));
+      for (let t = 0; t < tentativas; t++) {
+        const uso = new Map(dzs.map(x => [x, 0]));
+        const vistos = new Set(), fora = [];
+        let rep = 0, guarda = 0;
+        while (fora.length < G && guarda < G * 60) {
+          guarda++;
+          const jit = 0.999 + rep * 0.6;
+          const o = dzs.map(x => [uso.get(x) + r() * jit, x]).sort((a, b) => a[0] - b[0]).slice(0, k).map(p => p[1]).sort((a, b) => a - b);
+          const ko = o.join(',');
+          if (vistos.has(ko)) { rep++; continue; }
+          rep = 0; vistos.add(ko); fora.push(o);
+          o.forEach(x => uso.set(x, uso.get(x) + 1));
+        }
+        if (fora.length < G) continue;
+        const sets = fora.map(o => new Set(o));
+        let nota = 0;
+        for (let i = 0; i < G; i++) for (let j = i + 1; j < G; j++) {
+          let c = 0;
+          for (const x of fora[j]) if (sets[i].has(x)) c++;
+          nota += c * c;
+        }
+        const usos = [...uso.values()];
+        nota += (Math.max(...usos) - Math.min(...usos)) * 100000;
+        if (nota < melhorNota) { melhorNota = nota; melhor = fora; }
+      }
+      if (!melhor && total <= 5000) {       // reserva: sorteia entre todas as combinações
+        const todas = subconjuntos(dzs, k);
+        for (let i = todas.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [todas[i], todas[j]] = [todas[j], todas[i]]; }
+        melhor = todas.slice(0, G);
+      }
+      res = (melhor || []).map(o => dzs.filter(x => !o.includes(x)));
+    }
+  }
+  res = res.map(ordenar).sort((a, b) => { for (let i = 0; i < 15; i++) if (a[i] !== b[i]) return a[i] - b[i]; return 0; });
+  cacheJogos.set(chave, res);
+  return res;
+}
+
+/* Chances estimadas por simulação (11 a 14) e exatas (15) */
+const cacheChances = new Map();
+function chances(jogos) {
+  const chave = jogos.map(j => j.join('.')).join('|');
+  if (cacheChances.has(chave)) return cacheChances.get(chave);
+  const masks = jogos.map(j => j.reduce((m, n) => (m | (1 << (n - 1))) >>> 0, 0));
+  const r = rng(424242), S = 100000, a = new Array(25);
+  let c11 = 0, c12 = 0, c13 = 0, c14 = 0;
+  for (let s = 0; s < S; s++) {
+    for (let i = 0; i < 25; i++) a[i] = i;
+    let d = 0;
+    for (let i = 0; i < 15; i++) {
+      const j = i + Math.floor(r() * (25 - i));
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+      d |= 1 << a[i];
+    }
+    let best = 0;
+    for (let m = 0; m < masks.length; m++) {
+      const h = pop(masks[m] & d);
+      if (h > best) { best = h; if (best >= 14) break; }
+    }
+    if (best >= 11) c11++;
+    if (best >= 12) c12++;
+    if (best >= 13) c13++;
+    if (best >= 14) c14++;
+  }
+  const res = { 11: c11 / S, 12: c12 / S, 13: c13 / S, 14: c14 / S, 15: jogos.length / TOTAL_COMB };
+  cacheChances.set(chave, res);
+  return res;
+}
+
+function valorEsperadoPorJogo() {
+  let ev = 0;
+  for (const k of [11, 12, 13, 14, 15]) ev += comb(15, k) * comb(10, 15 - k) / TOTAL_COMB * PREMIO_MEDIO[k];
+  return ev;
+}
+
+function fmtChance(p) {
+  if (!(p > 0)) return 'praticamente zero';
+  if (p >= 0.1) return Math.round(p * 100) + '%';
+  return '1 em ' + nf(Math.round(1 / p));
+}
+
+/* ================= VOLANTES ================= */
+function marca(el, dezenas) {
+  const s = new Set(dezenas || MARCA_PADRAO);
+  el.innerHTML = Array.from({length:25}, (_, i) => '<i' + (s.has(i + 1) ? ' class="on"' : '') + '></i>').join('');
+}
+
+/* jogo: dezenas marcadas; sorteio: Set das sorteadas (opcional) */
 function volante(jogo, sorteio, extra) {
   const mk = new Set(jogo || []);
   let h = '<div class="vol' + (sorteio ? ' cmp' : '') + (extra ? ' ' + extra : '') + '" aria-label="Volante">';
@@ -428,12 +673,17 @@ async function entrar(ev) {
   busy(btn, true, 'Entrando...');
   try {
     const j = await api('init');
-    JOGOS = j.jogos; POOL = j.pool; HIST = j.historico; APOSTAS = j.apostas;
-    FIN = j.financeiro || []; VALOR_APOSTA = Number(j.valorAposta) || 3.5;
+    PLANO = j.plano; APOSTAS = j.apostas; MAX_JOGOS = j.maxJogos || 200;
     $('senha').value = '';
     $('lock').hidden = true;
     $('app').hidden = false;
-    renderTudo();
+    marca($('headMark'), PLANO.dezenas);
+    saldoMostrado = 0;
+    iniciarEdicao();
+    renderApostasTab();
+    renderPlano(true);
+    if (PLANO.aviso) toast(PLANO.aviso, 'erro');
+    sincronizar();
   } catch (e) {
     SENHA = null;
     $('lock').hidden = false; $('app').hidden = true;
@@ -444,12 +694,16 @@ async function entrar(ev) {
 }
 
 function sair() {
-  SENHA = null; JOGOS = []; POOL = []; HIST = []; APOSTAS = []; PROXIMO = null;
-  FIN = []; ULTIMO_RES = null;
-  ['finLista','finResumo','apoLista','histLista','jogosLista','gamesGrid','poolVol'].forEach(id => $(id).innerHTML = '');
-  $('gamesCard').hidden = true;
-  limparManual();
-  irPara('conferir');
+  SENHA = null; PLANO = null; APOSTAS = []; PROXIMO = null; ULTIMO = null; EDIT = null; SYNC = 'idle';
+  FILTRO = 'todas'; saldoMostrado = null; recemAberta = null;
+  abertas.clear(); manual.clear();
+  ['conta','contaResumo','lista','syncInfo','planChip','pCalc','pChances','pJogos','pRetorno','planPick','pDias','heroChart','filtros'].forEach(id => $(id).innerHTML = '');
+  $('heroSaldo').textContent = 'R$ 0,00';
+  $('proxInfo').innerHTML = '<p class="next-msg">Buscando o próximo sorteio na Caixa...</p>';
+  $('novoConc').value = '';
+  $('saveBar').hidden = true;
+  $('main').classList.remove('salvando');
+  irPara('apostas');
   $('app').hidden = true;
   $('lock').hidden = false;
   $('senha').focus();
@@ -470,18 +724,17 @@ document.addEventListener('keydown', e => {
   if (escCount >= 2) { clearTimeout(escTimer); escCount = 0; panico(); }
 });
 
-/* Tema */
 function alternarTema() {
   const dark = document.body.classList.toggle('dark');
   $('btnTema').textContent = dark ? '☀️' : '🌙';
 }
 
-/* Abas */
 $('tabs').addEventListener('click', e => {
   const b = e.target.closest('button[data-tab]');
   if (!b) return;
   document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
-  ['conferir','apostas','historico','financeiro','jogos'].forEach(t => $('tab-' + t).hidden = (t !== b.dataset.tab));
+  ['apostas','plano'].forEach(t => $('tab-' + t).hidden = (t !== b.dataset.tab));
+  if (b.dataset.tab === 'apostas' && SENHA) desenharGrafico();
   window.scrollTo({ top: 0 });
 });
 
@@ -490,361 +743,570 @@ function irPara(tab) {
   if (b) b.click();
 }
 
-/* ================= RENDER ================= */
-function renderTudo() {
-  renderJogos();
-  renderApostas();
-  renderHistorico();
-  renderFinanceiro();
-  renderVazio();
-  limparFin();
-  montarGrid();
+/* ================= APOSTAS: TOPO ================= */
+function renderApostasTab() {
+  renderConta();
+  renderNova();
+  renderLista();
 }
 
-function renderJogos() {
-  const custo = brl(JOGOS.length * VALOR_APOSTA);
-  $('poolTitle').textContent = 'Seu grupo de ' + POOL.length + ' dezenas';
-  $('jogosTitle').textContent = 'Os ' + JOGOS.length + ' jogos';
-  $('custoTxt').textContent = custo;
-  $('custoTxt2').textContent = custo;
-  $('poolVol').outerHTML = volante(POOL, null, 'lg').replace('<div class="vol lg"', '<div class="vol lg" id="poolVol"');
-  $('jogosLista').innerHTML = JOGOS.map((j, i) =>
-    '<div class="game"><header><span>Jogo ' + dz(i + 1) + '</span></header>' + volante(j) + '</div>').join('');
+function totais() {
+  const custo = APOSTAS.reduce((s, a) => s + a.custo, 0);
+  const ganho = APOSTAS.reduce((s, a) => s + (a.premio || 0), 0);
+  return { custo, ganho, saldo: ganho - custo };
 }
 
-function renderVazio() {
-  ULTIMO_RES = null;
-  $('gamesCard').hidden = true;
-  $('resCard').innerHTML =
-    '<div class="empty">' +
-      volante(POOL, null, 'lg') +
-      '<div class="txt">' +
-        '<h2>Confira o último sorteio</h2>' +
-        '<p>Busco o resultado na Caixa e comparo com os seus jogos. Se o concurso estiver registrado em Apostas, a conferência fica salva no histórico.</p>' +
-        '<div class="search">' +
-          '<button class="btn-pri" id="btnUltimo" onclick="buscar()">Buscar último resultado</button>' +
-          '<input type="number" id="numConcurso" placeholder="Concurso" min="1" aria-label="Número do concurso">' +
-          '<button id="btnConcurso" onclick="buscar(Number(document.getElementById(\'numConcurso\').value))">Buscar este</button>' +
-        '</div>' +
+function renderConta() {
+  const { custo, ganho, saldo } = totais();
+  const ret = custo > 0 ? ganho / custo * 100 : null;
+  const conf = APOSTAS.filter(a => a.situacao === 'conferida');
+  const melhor = conf.length ? Math.max(...conf.map(a => a.melhor)) : null;
+  $('conta').innerHTML =
+    '<div><small>Total apostado</small><b>' + brl(custo) + '</b></div>' +
+    '<div><small>Total em prêmios</small><b>' + brl(ganho) + '</b></div>' +
+    '<div><small>Retorno</small><b>' + (ret == null ? '—' : ret.toFixed(1).replace('.', ',') + '%') + '</b></div>' +
+    '<div><small>Melhor jogo</small><b>' + (melhor == null ? '—' : melhor + ' pontos') + '</b></div>';
+
+  const pend = APOSTAS.length - conf.length;
+  let t;
+  if (!APOSTAS.length) t = 'Nenhuma aposta registrada ainda. Quando apostar, registre ao lado.';
+  else {
+    t = plural(APOSTAS.length, 'aposta registrada', 'apostas registradas') + (pend ? ', ' + pend + ' aguardando sorteio' : '') + '.';
+    if (conf.length) {
+      const premiadas = conf.filter(a => a.melhor >= 11).length;
+      t += ' ' + plural(premiadas, 'premiada', 'premiadas') + ' de ' + conf.length + ' conferidas.';
+    }
+    if (APOSTAS.some(a => a.premioPendente)) t += ' Há prêmio de 14 ou 15 pontos a confirmar.';
+  }
+  $('contaResumo').textContent = t;
+  animarSaldo(saldo);
+  desenharGrafico();
+}
+
+function saldoHtml(v) { return v < 0 ? '<span class="hneg">' + brl(v) + '</span>' : brl(v); }
+
+function animarSaldo(v) {
+  const el = $('heroSaldo');
+  const ini = saldoMostrado == null ? v : saldoMostrado;
+  saldoMostrado = v;
+  if (ini === v || semMovimento()) { el.innerHTML = saldoHtml(v); return; }
+  const t0 = performance.now(), dur = 650;
+  const passo = t => {
+    if (saldoMostrado !== v) return;            // outro valor entrou no meio
+    const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    el.innerHTML = saldoHtml(Math.round((ini + (v - ini) * e) * 100) / 100);
+    if (k < 1) requestAnimationFrame(passo); else el.innerHTML = saldoHtml(v);
+  };
+  requestAnimationFrame(passo);
+}
+
+/* Gráfico da evolução do saldo (uma série, linha do zero, dica ao passar o mouse) */
+function desenharGrafico() {
+  const el = $('heroChart');
+  if (!el || $('tab-apostas').hidden) return;
+  const asc = APOSTAS.slice().sort((a, b) => a.concurso - b.concurso);
+  if (asc.length < 2) {
+    el.innerHTML = '<p class="hero-note">A evolução do seu saldo aparece aqui a partir da segunda aposta.</p>';
+    return;
+  }
+  const pts = [{ v: 0, a: null }];
+  let acc = 0;
+  asc.forEach(a => { acc += (a.premio || 0) - a.custo; pts.push({ v: acc, a }); });
+  el.innerHTML = '';
+  const W = Math.max(200, el.clientWidth), H = Math.max(118, el.clientHeight || 118);
+  const pl = 36, pr = 8, pt = 10, pb = 8;
+  let mn = Math.min(0, ...pts.map(p => p.v)), mx = Math.max(0, ...pts.map(p => p.v));
+  if (mx === mn) mx = mn + 1;
+  const x = i => pl + i * (W - pl - pr) / (pts.length - 1);
+  const y = v => pt + (mx - v) * (H - pt - pb) / (mx - mn);
+  const linha = pts.map((p, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(p.v).toFixed(1)).join('');
+  const area = linha + 'L' + x(pts.length - 1).toFixed(1) + ',' + y(0).toFixed(1) + 'L' + x(0).toFixed(1) + ',' + y(0).toFixed(1) + 'Z';
+  const ult = pts.length - 1;
+  el.innerHTML =
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Evolução do saldo: de R$ 0,00 para ' + esc(brl(acc)) + ' em ' + asc.length + ' apostas.">' +
+      '<path d="' + area + '" fill="rgba(255,255,255,.10)"/>' +
+      '<line x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y(0).toFixed(1) + '" y2="' + y(0).toFixed(1) + '" stroke="rgba(255,255,255,.38)" stroke-width="1" stroke-dasharray="3 4"/>' +
+      '<path d="' + linha + '" fill="none" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<circle cx="' + x(ult).toFixed(1) + '" cy="' + y(pts[ult].v).toFixed(1) + '" r="4" fill="#ffffff"/>' +
+      '<line id="gCross" x1="0" x2="0" y1="' + pt + '" y2="' + (H - pb) + '" stroke="rgba(255,255,255,.5)" stroke-width="1" visibility="hidden"/>' +
+      '<circle id="gDot" r="5" fill="#ffffff" stroke="rgba(0,0,0,.25)" stroke-width="2" visibility="hidden"/>' +
+      '<rect id="gHit" x="0" y="0" width="' + W + '" height="' + H + '" fill="transparent"/>' +
+    '</svg>' +
+    '<span class="zero-lbl" style="top:' + y(0).toFixed(1) + 'px">R$ 0</span>' +
+    '<div class="tip" id="gTip" hidden></div>';
+
+  const hit = $('gHit'), tip = $('gTip'), cross = $('gCross'), dot = $('gDot');
+  const mostrar = ev => {
+    const r = hit.getBoundingClientRect();
+    const px = (ev.clientX - r.left) * (W / r.width);
+    let i = Math.round((px - pl) / ((W - pl - pr) / (pts.length - 1)));
+    i = Math.max(0, Math.min(ult, i));
+    const p = pts[i];
+    cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('visibility', 'visible');
+    dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(p.v)); dot.setAttribute('visibility', 'visible');
+    tip.innerHTML = p.a
+      ? 'Concurso <b>' + p.a.concurso + '</b><br>Saldo: <b>' + moeda(p.v) + '</b><br>Neste concurso: <b>' + moeda((p.a.premio || 0) - p.a.custo) + '</b>'
+      : 'Início: <b>R$ 0,00</b>';
+    tip.style.left = Math.max(70, Math.min(W - 70, x(i))) + 'px';
+    tip.style.top = y(p.v) + 'px';
+    tip.hidden = false;
+  };
+  const esconder = () => { tip.hidden = true; cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); };
+  hit.addEventListener('pointermove', mostrar);
+  hit.addEventListener('pointerdown', mostrar);
+  hit.addEventListener('pointerleave', esconder);
+}
+
+let resizeTimer = null;
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (SENHA) desenharGrafico(); }, 150); });
+
+function diaDe(data) {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(data || '');
+  if (!m) return null;
+  return DIA_IDX[new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1])).getDay()];
+}
+
+function quando(data) {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(data || '');
+  if (!m) return '';
+  const alvo = new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const d = Math.round((alvo - hoje) / 86400000);
+  if (d === 0) return 'hoje';
+  if (d === 1) return 'amanhã';
+  if (d > 1) return 'em ' + d + ' dias';
+  return '';
+}
+
+function renderNova() {
+  const G = PLANO.jogos.length;
+  $('planChip').innerHTML = 'Usa o seu plano: <b>' + G + ' jogos</b>, ' + brl(G * PLANO.valorUnitario);
+  let h;
+  if (PROXIMO) {
+    const dia = diaDe(PROXIMO.data), q = quando(PROXIMO.data);
+    h = '<small>Próximo sorteio</small>' +
+      '<div class="next-num">' + PROXIMO.concurso + '</div>' +
+      '<div class="next-when">' + (dia ? DIA_NOME[dia] + ', ' : '') + esc(PROXIMO.data || '') + (q ? ' <span class="badge b-acc">' + q + '</span>' : '') + '</div>';
+    if (dia && !PLANO.dias.includes(dia)) h += '<p class="next-note alerta">Esse dia não está entre os seus dias de jogo.</p>';
+    if (APOSTAS.some(a => a.concurso === PROXIMO.concurso)) h += '<p class="next-note">Você já registrou a aposta desse concurso.</p>';
+    else if (!$('novoConc').value) $('novoConc').value = PROXIMO.concurso;
+  } else if (SYNC === 'busy' || SYNC === 'idle') {
+    h = '<p class="next-msg">Buscando o próximo sorteio na Caixa...</p>';
+  } else {
+    h = '<small>Próximo sorteio</small><p class="next-msg">Não consegui saber o número do próximo concurso agora. Digite o número que está no seu comprovante.</p>';
+  }
+  $('proxInfo').innerHTML = h;
+}
+
+/* ================= APOSTAS: LISTA ================= */
+function filtrar(f) { FILTRO = f; renderLista(); }
+
+function renderLista() {
+  const conf = APOSTAS.filter(a => a.situacao === 'conferida');
+  const n = { todas: APOSTAS.length, aguardando: APOSTAS.length - conf.length, premiadas: conf.filter(a => a.melhor >= 11).length };
+  $('filtros').innerHTML = [['todas','Todas'],['aguardando','Aguardando'],['premiadas','Premiadas']].map(([k, l]) =>
+    '<button class="' + (FILTRO === k ? 'on' : '') + '" aria-pressed="' + (FILTRO === k) + '" onclick="filtrar(\'' + k + '\')">' + l + ' <span class="cnt">' + n[k] + '</span></button>').join('');
+
+  if (!APOSTAS.length) {
+    $('lista').innerHTML = '<div class="vazio">Quando fizer uma aposta na lotérica, registre o concurso no cartão acima.<br>Ela aparece aqui, e eu confiro o resultado sozinho.</div>';
+    return;
+  }
+  let acc = 0;
+  const saldo = {};
+  APOSTAS.slice().sort((a, b) => a.concurso - b.concurso).forEach(a => { acc += (a.premio || 0) - a.custo; saldo[a.id] = acc; });
+  const vis = APOSTAS.filter(a => FILTRO === 'todas' || (FILTRO === 'aguardando' ? a.situacao === 'aguardando' : a.situacao === 'conferida' && a.melhor >= 11));
+  $('lista').innerHTML = vis.length
+    ? '<div class="ap-head"><span>Concurso</span><span>Sorteio</span><span>Resultado</span><span class="r">Custo</span><span class="r">Prêmio</span><span class="r">Saldo</span><span></span></div>' +
+      vis.map(a => linhaAposta(a, saldo[a.id])).join('')
+    : '<div class="vazio">Nenhuma aposta neste filtro.</div>';
+  recemAberta = null;
+}
+
+function linhaAposta(a, saldo) {
+  const id = esc(a.id);
+  const open = abertas.has(a.id);
+  const conf = a.situacao === 'conferida';
+  const st = !conf ? 'st-wait' : a.melhor >= 11 ? 'st-win' : 'st-lose';
+  const res = !conf ? '<span class="badge b-acc">Aguardando sorteio</span>'
+    : a.melhor >= 11 ? '<span class="badge b-ok">' + a.melhor + ' pontos, premiada</span>'
+    : '<span class="badge b-mut">' + a.melhor + ' pontos</span>';
+  const premio = !conf ? '<span class="muted">—</span>'
+    : brl(a.premio || 0) + (a.premioPendente ? ' <span class="badge b-warn">a confirmar</span>' : '');
+  return '<div class="ap ' + st + (open ? ' open' : '') + '" id="ap-' + id + '">' +
+    '<button class="ap-row" aria-expanded="' + open + '" onclick="toggleAposta(\'' + id + '\')">' +
+      '<span class="a-conc num">' + a.concurso + '</span>' +
+      '<span class="a-data"><i class="lbl">Sorteio </i>' + (conf ? (esc(a.dataSorteio) || '—') : 'pendente') + '</span>' +
+      '<span class="a-res">' + res + '</span>' +
+      '<span class="a-custo r num"><i class="lbl">Custo </i>' + brl(a.custo) + '</span>' +
+      '<span class="a-premio r num"><i class="lbl">Prêmio </i>' + premio + '</span>' +
+      '<span class="a-saldo r num"><i class="lbl">Saldo </i>' + moeda(saldo) + '</span>' +
+      '<span class="chev" aria-hidden="true">▾</span>' +
+    '</button>' +
+    (open ? '<div class="ap-det' + (recemAberta === a.id ? ' anim' : '') + '">' + detalhe(a) + '</div>' : '') +
+  '</div>';
+}
+
+function detalhe(a) {
+  const id = esc(a.id);
+  const conf = a.situacao === 'conferida';
+  const set = conf ? new Set(a.dezenas) : null;
+  let h = '';
+  if (conf) {
+    const premiados = (a.pontos || []).filter(p => p >= 11).length;
+    const fonte = a.fonte === 'Manual' ? 'Resultado digitado por você' : 'Resultado buscado na ' + esc(a.fonte);
+    h += '<div class="det">' + volante(a.dezenas, null, 'lg') + '<div>' +
+      '<div class="hero-meta">' + (a.dataSorteio ? 'Sorteio de ' + esc(a.dataSorteio) + '. ' : '') + fonte + '.</div>' +
+      '<div class="verdict' + (a.melhor >= 11 ? ' win' : '') + '"><span class="big">' + a.melhor + '</span><span class="lbl2">' +
+        (a.melhor >= 11 ? 'pontos no melhor jogo. ' + plural(premiados, 'jogo premiado', 'jogos premiados') + '.' : 'pontos no melhor jogo. Nenhum premiado desta vez.') +
+      '</span></div>' +
+      '<div class="faixas">' + [15,14,13,12,11].map(f =>
+        '<div class="' + (a.faixas[f] ? 'got' : '') + '"><small>' + f + ' pontos</small><b>' + (a.faixas[f] || 0) + '</b></div>').join('') + '</div>' +
+      blocoPremio(a) +
+      '<div class="row" style="margin-top:14px">' +
+        '<button onclick="abrirManual(\'' + id + '\')">Digitar o resultado de novo</button>' +
+        '<button class="btn-quiet danger-text" onclick="excluirAposta(\'' + id + '\')">Excluir aposta</button>' +
       '</div>' +
-    '</div>';
+    '</div></div>';
+  } else {
+    h += '<div class="wait"><p>Aguardando o sorteio do concurso <b class="num">' + a.concurso + '</b>. Quando o resultado sair, eu confiro sozinho. Registrada em ' + esc(a.registradaEm) + '.</p>' +
+      '<div class="row">' +
+        '<button class="btn-pri" onclick="sincronizar()">Buscar resultado agora</button>' +
+        '<button onclick="abrirManual(\'' + id + '\')">Digitar resultado</button>' +
+        '<button class="btn-quiet danger-text" onclick="excluirAposta(\'' + id + '\')">Excluir aposta</button>' +
+      '</div></div>';
+  }
+  if (manual.has(a.id)) h += pickerManual(a.id);
+
+  const pts = conf ? a.pontos : null;
+  const ordem = a.jogos.map((j, i) => i);
+  if (conf) ordem.sort((x, y) => pts[y] - pts[x] || x - y);
+  h += '<h3 class="sub">' + (conf ? 'Os ' + a.jogos.length + ' jogos desta aposta, do melhor para o pior' : 'Os ' + a.jogos.length + ' jogos desta aposta') + '</h3>';
+  h += '<div class="games">' + ordem.map(i =>
+    '<div class="game' + (conf && pts[i] >= 11 ? ' prem' : '') + '"><header><span>Jogo ' + dz(i + 1) + '</span>' +
+      (conf ? '<b>' + pts[i] + '<small>pontos</small></b>' : '') + '</header>' + volante(a.jogos[i], set) + '</div>').join('') + '</div>';
+  return h;
 }
 
-function renderApostas() {
-  $('sugProx').innerHTML = PROXIMO
-    ? 'Próximo concurso: <b class="num">' + PROXIMO.concurso + '</b>' + (PROXIMO.data ? ', em ' + esc(PROXIMO.data) : '') + '.'
-    : 'Para saber o número do próximo concurso, busque o último resultado na aba Conferir.';
-  if (PROXIMO && !$('apoConcurso').value) $('apoConcurso').value = PROXIMO.concurso;
-
-  if (!APOSTAS.length) { $('apoLista').innerHTML = '<p class="muted">Nenhuma aposta registrada ainda. Registre o concurso logo depois de jogar.</p>'; return; }
-  $('apoLista').innerHTML = '<table><thead><tr><th>Concurso</th><th>Registrado em</th><th>Situação</th><th></th></tr></thead><tbody>' +
-    APOSTAS.map(a => {
-      const st = a.conferido
-        ? (a.melhor >= 11 ? '<span class="badge b-ok">Premiado, ' + a.melhor + ' pontos</span>' : '<span class="badge b-mut">Sem prêmio, ' + a.melhor + ' pontos</span>')
-        : '<span class="badge b-acc">Aguardando sorteio</span>';
-      return '<tr><td class="num">' + a.concurso + '</td><td>' + esc(a.registradoEm) + '</td><td>' + st + '</td>' +
-        '<td class="r"><button class="btn-icon" onclick="removerAposta(' + a.concurso + ')" title="Remover aposta" aria-label="Remover">✕</button></td></tr>';
-    }).join('') + '</tbody></table>';
+function blocoPremio(a) {
+  const id = esc(a.id);
+  const resultado = (a.premio || 0) - a.custo;
+  if (a.melhor < 11 && !a.premio && !a.premioAjustado)
+    return '<p class="muted">Sem prêmio neste concurso. Resultado: ' + moeda(resultado) + '.</p>';
+  const st = a.premioAjustado ? 'Valor ajustado por você.'
+    : a.premioPendente ? 'Teve 14 ou 15 pontos sem valor divulgado ainda: confira na Caixa e ajuste aqui.'
+    : a.fonte === 'Manual' ? 'Calculado com os valores fixos da Caixa.'
+    : 'Calculado com o rateio divulgado pela Caixa.';
+  return '<div class="premio-ed"><label class="field">Prêmio desta aposta (R$)<input type="number" min="0" step="0.01" id="pr-' + id + '" value="' + (a.premio || 0).toFixed(2) + '"></label>' +
+    '<button onclick="salvarPremio(\'' + id + '\')">Salvar prêmio</button></div>' +
+    '<p class="muted">' + st + ' Resultado deste concurso: ' + moeda(resultado) + '.</p>';
 }
 
-function renderHistorico() {
-  if (!HIST.length) { $('histLista').innerHTML = '<p class="muted">Nenhuma conferência salva ainda. Elas aparecem aqui depois do primeiro sorteio de um concurso registrado.</p>'; return; }
-  $('histLista').innerHTML = '<table><thead><tr><th>Concurso</th><th>Data</th><th class="r">Melhor</th>' +
-    '<th class="r">15</th><th class="r">14</th><th class="r">13</th><th class="r">12</th><th class="r">11</th>' +
-    '<th class="r">Total estimado</th><th>Fonte</th><th></th></tr></thead><tbody>' +
-    HIST.map(h => '<tr class="' + (h.melhor >= 11 ? 'prem' : '') + '">' +
-      '<td class="num">' + h.concurso + '</td><td class="num">' + esc(h.data || '-') + '</td>' +
-      '<td class="r num">' + h.melhor + '</td>' +
-      [15,14,13,12,11].map(f => '<td class="r num">' + (h.faixas[f] || '<span class="muted">0</span>') + '</td>').join('') +
-      '<td class="r num">' + (h.total != null ? brl(h.total) : '-') + '</td>' +
-      '<td>' + esc(h.fonte) + '</td>' +
-      '<td class="r" style="white-space:nowrap"><button onclick="verHistorico(' + h.concurso + ')">Ver</button> ' +
-      '<button class="btn-icon" onclick="excluirResultado(' + h.concurso + ')" title="Excluir conferência" aria-label="Excluir">✕</button></td></tr>').join('') +
-    '</tbody></table>';
+function pickerManual(id) {
+  const sel = manual.get(id);
+  let h = '<div class="manual-box" id="mb-' + id + '"><p><b>Digite o resultado.</b> Toque nas 15 dezenas sorteadas.</p><div class="pick sm">';
+  for (let n = 1; n <= 25; n++)
+    h += '<button type="button" class="' + (sel.has(n) ? 'sel' : '') + '" aria-pressed="' + sel.has(n) + '" onclick="togManual(\'' + id + '\',' + n + ',this)">' + dz(n) + '</button>';
+  h += '</div><div class="row" style="margin-top:12px"><span class="num" id="mc-' + id + '">' + sel.size + ' de 15</span>' +
+    '<button onclick="fecharManual(\'' + id + '\')">Cancelar</button>' +
+    '<button class="btn-pri" id="mok-' + id + '" onclick="confirmarManual(\'' + id + '\')">Conferir com estas dezenas</button></div></div>';
+  return h;
 }
 
-function renderResultado(r, aviso, semRolar) {
-  const set = new Set(r.dezenas);
-  const pontos = (r.pontos && r.pontos.length === JOGOS.length) ? r.pontos : JOGOS.map(j => j.filter(n => set.has(n)).length);
-  const faixas = r.faixas || {15:0,14:0,13:0,12:0,11:0};
-  if (!r.faixas) pontos.forEach(p => { if (p >= 11) faixas[p]++; });
-  const premiados = pontos.filter(p => p >= 11).length;
-  const melhor = Math.max.apply(null, pontos);
-  ULTIMO_RES = r;
-
-  let status;
-  if (r.apostado) status = '<span class="badge b-ok">Aposta registrada, salvo no histórico</span>';
-  else if (r.salvo) status = '<span class="badge b-warn">Salvo, mas o concurso não está em Apostas</span>';
-  else if (r.concurso) status = '<span class="badge b-warn">Concurso não registrado em Apostas</span>' +
-    '<button onclick="marcarApostado(' + r.concurso + ')">Registrar aposta e salvar</button>';
-  else status = '<span class="badge b-mut">Conferência só na tela</span>';
-
-  const jaLancado = r.concurso && FIN.some(f => f.tipo === 'Prêmio' && f.concurso === r.concurso);
-  const btnPremio = (melhor >= 11 && r.concurso)
-    ? (jaLancado
-        ? '<span class="badge b-ok">Prêmio já lançado no Financeiro</span>'
-        : '<button class="btn-pri" onclick="prepararPremio()">Lançar prêmio no Financeiro</button>')
-    : '';
-
-  const meta = [r.data ? 'Sorteio em ' + esc(r.data) : '', r.fonte ? 'fonte: ' + esc(r.fonte) : ''].filter(Boolean).join(', ');
-
-  $('resCard').innerHTML =
-    '<div class="hero">' +
-      volante(r.dezenas, null, 'lg') +
-      '<div>' +
-        '<div class="hero-head"><h2>' + (r.concurso ? 'Concurso <span class="num">' + r.concurso + '</span>' : 'Conferência manual') + '</h2></div>' +
-        (meta ? '<div class="hero-meta">' + meta + '</div>' : '') +
-        '<div class="verdict' + (melhor >= 11 ? ' win' : '') + '">' +
-          '<span class="big">' + melhor + '</span>' +
-          '<span class="lbl">' + (melhor >= 11
-            ? 'pontos no melhor jogo. ' + plural(premiados, 'jogo premiado', 'jogos premiados') + '.'
-            : 'pontos no melhor jogo. Nenhum premiado desta vez.') + '</span>' +
-        '</div>' +
-        '<div class="faixas">' + [15,14,13,12,11].map(f =>
-          '<div class="' + (faixas[f] ? 'got' : '') + '"><small>' + f + ' pontos</small><b>' + (faixas[f] || 0) + '</b></div>').join('') +
-        '</div>' +
-        '<div class="hero-foot">' +
-          (r.total != null ? '<span class="total">Total estimado <b>' + brl(r.total) + '</b></span>' : '') +
-        '</div>' +
-        '<div class="hero-foot" style="margin-top:12px">' + status + btnPremio + '</div>' +
-        (aviso ? '<p class="muted" style="margin-top:10px">' + esc(aviso) + '</p>' : '') +
-        '<div class="search" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)">' +
-          '<button id="btnUltimo" onclick="buscar()">Buscar último resultado</button>' +
-          '<input type="number" id="numConcurso" placeholder="Concurso" min="1" aria-label="Número do concurso">' +
-          '<button id="btnConcurso" onclick="buscar(Number(document.getElementById(\'numConcurso\').value))">Buscar este</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-    (r.total != null ? '<p class="muted" style="margin-top:14px">O total é uma estimativa pelo rateio divulgado. Confirme no app da Caixa ou na lotérica antes de resgatar.</p>' : '');
-
-  const ordem = pontos.map((p, i) => i).sort((a, b) => pontos[b] - pontos[a] || a - b);
-  $('gamesGrid').innerHTML = ordem.map(i =>
-    '<div class="game' + (pontos[i] >= 11 ? ' prem' : '') + '">' +
-      '<header><span>Jogo ' + dz(i + 1) + '</span><b>' + pontos[i] + '<small>pontos</small></b></header>' +
-      volante(JOGOS[i], set) +
-    '</div>').join('');
-  $('gamesTitle').textContent = 'Seus ' + JOGOS.length + ' jogos neste sorteio';
-  $('gamesCard').hidden = false;
-
-  if (!semRolar) $('resCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+function toggleAposta(id) {
+  if (abertas.has(id)) { abertas.delete(id); manual.delete(id); }
+  else { abertas.add(id); recemAberta = id; }
+  renderLista();
 }
 
-/* ================= AÇÕES ================= */
-async function buscar(concurso) {
-  if (concurso !== undefined && (!Number.isInteger(concurso) || concurso < 1)) { toast('Digite o número do concurso antes de buscar.', 'erro'); return; }
-  const btn = concurso ? $('btnConcurso') : $('btnUltimo');
-  busy(btn, true, 'Buscando...');
+function abrirManual(id) {
+  manual.set(id, new Set());
+  abertas.add(id);
+  renderLista();
+  const box = $('mb-' + id);
+  if (box) box.scrollIntoView({ behavior: semMovimento() ? 'auto' : 'smooth', block: 'center' });
+}
+
+function fecharManual(id) {
+  manual.delete(id);
+  renderLista();
+}
+
+function togManual(id, n, btn) {
+  const sel = manual.get(id);
+  if (!sel) return;
+  if (sel.has(n)) sel.delete(n);
+  else if (sel.size < 15) sel.add(n);
+  else { toast('Já são 15 dezenas. Desmarque uma para trocar.', 'erro'); return; }
+  btn.classList.toggle('sel', sel.has(n));
+  btn.setAttribute('aria-pressed', sel.has(n));
+  $('mc-' + id).textContent = sel.size + ' de 15';
+}
+
+async function confirmarManual(id) {
+  const sel = manual.get(id);
+  if (!sel || sel.size !== 15) { toast('Marque exatamente 15 dezenas. Faltam ' + (15 - (sel ? sel.size : 0)) + '.', 'erro'); return; }
+  const btn = $('mok-' + id);
+  busy(btn, true, 'Conferindo...');
   try {
-    const j = await api('buscar', concurso ? { concurso } : {});
-    HIST = j.historico; APOSTAS = j.apostas;
-    const r = j.resultado;
-    if (r.proximo) PROXIMO = { concurso: r.proximo, data: r.dataProximo };
-    renderApostas(); renderHistorico();
-    renderResultado(r, j.novos && j.novos.length ? 'Também conferi apostas pendentes: concurso ' + j.novos.join(', ') + '.' : '');
+    const j = await api('resultadoManual', { id, dezenas: ordenar([...sel]) });
+    APOSTAS = j.apostas;
+    manual.delete(id);
+    renderApostasTab();
+    toast('Resultado conferido.', 'ok');
+  } catch (e) { toast(e.message, 'erro'); busy(btn, false); }
+}
+
+async function salvarPremio(id) {
+  const v = Number($('pr-' + id).value);
+  if (!(v >= 0) || $('pr-' + id).value === '') { toast('Digite o valor do prêmio (zero ou mais).', 'erro'); return; }
+  try {
+    const j = await api('editarPremio', { id, valor: v });
+    APOSTAS = j.apostas;
+    renderApostasTab();
+    toast('Prêmio salvo.', 'ok');
+  } catch (e) { toast(e.message, 'erro'); }
+}
+
+async function excluirAposta(id) {
+  const a = APOSTAS.find(x => x.id === id);
+  if (!a) return;
+  if (!confirm('Excluir a aposta do concurso ' + a.concurso + '? O custo de ' + brl(a.custo) + ' e o prêmio dela saem da conta corrente.')) return;
+  try {
+    const j = await api('excluirAposta', { id });
+    APOSTAS = j.apostas;
+    abertas.delete(id); manual.delete(id);
+    renderApostasTab();
+    toast('Aposta excluída.', 'ok');
+  } catch (e) { toast(e.message, 'erro'); }
+}
+
+async function registrar() {
+  const c = Number($('novoConc').value);
+  if (!Number.isInteger(c) || c < 1) { toast('Digite o número do concurso que está no comprovante.', 'erro'); return; }
+  const btn = $('btnRegistrar');
+  busy(btn, true, 'Registrando...');
+  try {
+    const j = await api('registrarAposta', { concurso: c });
+    APOSTAS = j.apostas;
+    $('novoConc').value = '';
+    const a = APOSTAS.find(x => x.concurso === c);
+    if (FILTRO === 'premiadas') FILTRO = 'todas';
+    renderApostasTab();
+    toast('Aposta do concurso ' + c + ' registrada: ' + brl(a ? a.custo : 0) + '.', 'ok');
+    if (!ULTIMO || c <= ULTIMO.concurso) sincronizar();     // concurso já sorteado: confere na hora
+  } catch (e) { toast(e.message, 'erro'); }
+  finally { busy(btn, false); }
+}
+
+let sincronizando = false;
+async function sincronizar() {
+  if (sincronizando) return;
+  sincronizando = true;
+  SYNC = 'busy';
+  const btn = $('btnSync');
+  busy(btn, true, 'Atualizando...');
+  $('syncInfo').textContent = 'Buscando resultados na Caixa...';
+  if (!PROXIMO) renderNova();
+  try {
+    const j = await api('sincronizar');
+    if (!SENHA) return;                       // saiu do app enquanto buscava
+    APOSTAS = j.apostas; ULTIMO = j.ultimo; PROXIMO = j.proximo || PROXIMO;
+    SYNC = j.ultimo ? 'ok' : 'erro';
+    let msg = '';
+    if (ULTIMO) msg = 'Último sorteio: concurso ' + ULTIMO.concurso + (ULTIMO.data ? ', de ' + ULTIMO.data : '') + '.';
+    if (j.novos.length) msg += ' ' + plural(j.novos.length, 'aposta conferida', 'apostas conferidas') + ' agora.';
+    if (j.aviso) msg += (msg ? ' ' : '') + 'Não consegui buscar tudo na Caixa agora. Tente de novo mais tarde, ou abra a aposta e digite o resultado.';
+    $('syncInfo').textContent = msg;
+    j.novos.forEach(c => { const a = APOSTAS.find(x => x.concurso === c); if (a) { abertas.add(a.id); recemAberta = a.id; } });
+    renderApostasTab();
   } catch (e) {
-    toast(e.message, 'erro');
+    SYNC = 'erro';
+    $('syncInfo').textContent = e.message;
+    if (SENHA) renderNova();
+  } finally {
     busy(btn, false);
+    sincronizando = false;
   }
 }
 
-async function marcarApostado(concurso) {
-  try {
-    const j = await api('registrarAposta', { concurso, qtd: 1, lancarDebito: $('apoDeb').checked });
-    APOSTAS = j.apostas; FIN = j.financeiro || FIN; renderFinanceiro();
-    await buscar(concurso);
-    toast('Aposta do concurso ' + concurso + ' registrada.', 'ok');
-  } catch (e) { toast(e.message, 'erro'); }
+/* ================= PLANO ================= */
+function iniciarEdicao() {
+  EDIT = {
+    dezenas: new Set(PLANO.dezenas),
+    valorUnitario: Number(PLANO.valorUnitario),
+    orcamentoSemanal: Number(PLANO.orcamentoSemanal),
+    dias: new Set(PLANO.dias),
+    semente: Number(PLANO.semente) || 1
+  };
 }
 
-async function registrarAposta() {
-  const concurso = Number($('apoConcurso').value);
-  const qtd = Number($('apoQtd').value) || 1;
-  if (!Number.isInteger(concurso) || concurso < 1) { toast('Digite o número do concurso.', 'erro'); return; }
-  const btn = $('btnApo');
-  busy(btn, true, 'Registrando...');
-  try {
-    const deb = $('apoDeb').checked;
-    const j = await api('registrarAposta', { concurso, qtd, lancarDebito: deb });
-    APOSTAS = j.apostas; FIN = j.financeiro || FIN;
-    renderApostas(); renderFinanceiro();
-    toast(j.adicionadas
-      ? plural(j.adicionadas, 'aposta registrada', 'apostas registradas') + (deb ? ', com débito no Financeiro.' : '.')
-      : 'Esses concursos já estavam registrados.', 'ok');
-  } catch (e) { toast(e.message, 'erro'); }
-  finally { busy(btn, false); }
+function diasEmOrdem(set) { return DIAS.map(d => d[0]).filter(d => set.has(d)); }
+
+function mudouPlano() {
+  if (!PLANO || !EDIT) return false;
+  return ordenar([...EDIT.dezenas]).join() !== ordenar(PLANO.dezenas).join() ||
+    EDIT.valorUnitario !== Number(PLANO.valorUnitario) ||
+    EDIT.orcamentoSemanal !== Number(PLANO.orcamentoSemanal) ||
+    diasEmOrdem(EDIT.dias).join() !== diasEmOrdem(new Set(PLANO.dias)).join() ||
+    EDIT.semente !== Number(PLANO.semente);
 }
 
-async function removerAposta(concurso) {
-  if (!confirm('Remover a aposta do concurso ' + concurso + '? O débito no Financeiro continua lá; exclua por lá se precisar.')) return;
-  try {
-    const j = await api('removerAposta', { concurso });
-    APOSTAS = j.apostas; renderApostas();
-    toast('Aposta removida.', 'ok');
-  } catch (e) { toast(e.message, 'erro'); }
+function calcPlano() {
+  const N = EDIT.dezenas.size, d = EDIT.dias.size, vu = EDIT.valorUnitario, os = EDIT.orcamentoSemanal;
+  const r = { N, d, vu, os };
+  if (N < 15) r.erro = 'Escolha pelo menos 15 dezenas. Faltam ' + (15 - N) + '.';
+  else if (!(vu > 0)) r.erro = 'Informe o valor de cada aposta.';
+  else if (!(os > 0)) r.erro = 'Informe quanto quer gastar por semana.';
+  else if (!d) r.erro = 'Escolha pelo menos um dia de jogo.';
+  if (r.erro) return r;
+  r.porSorteio = os / d;
+  r.cabe = Math.floor(r.porSorteio / vu + 1e-9);
+  r.combos = comb(N, 15);
+  r.G = Math.min(r.cabe, r.combos, MAX_JOGOS);
+  if (r.G < 1) { r.erro = 'Com ' + brl(r.porSorteio) + ' por sorteio não dá para fazer nem uma aposta de ' + brl(vu) + '.'; return r; }
+  r.limite = r.G < r.cabe ? (r.G === r.combos ? 'combos' : 'max') : null;
+  r.custoSorteio = r.G * vu;
+  r.sobra = r.porSorteio - r.custoSorteio;
+  r.custoSemana = r.custoSorteio * d;
+  return r;
 }
 
-async function excluirResultado(concurso) {
-  if (!confirm('Excluir a conferência do concurso ' + concurso + ' do histórico?')) return;
-  try {
-    const j = await api('excluirResultado', { concurso });
-    HIST = j.historico; APOSTAS = j.apostas; renderHistorico(); renderApostas();
-    toast('Conferência excluída.', 'ok');
-  } catch (e) { toast(e.message, 'erro'); }
+function jogosDoPlano(c) {
+  if (!mudouPlano()) return PLANO.jogos;
+  if (c.erro) return [];
+  return gerarJogos(EDIT.dezenas, c.G, EDIT.semente);
 }
 
-function verHistorico(concurso) {
-  const h = HIST.find(x => x.concurso === concurso);
-  if (!h) return;
-  const apostado = APOSTAS.some(a => a.concurso === concurso);
-  irPara('conferir');
-  renderResultado(Object.assign({}, h, { apostado, salvo: true }));
-}
+let planoTimer = null;
+function agendarPlano() { clearTimeout(planoTimer); planoTimer = setTimeout(() => renderPlano(false), 160); }
 
-/* ================= FINANCEIRO ================= */
-function hojeISO() {
-  const d = new Date();
-  return d.getFullYear() + '-' + dz(d.getMonth() + 1) + '-' + dz(d.getDate());
-}
-function dataBR(iso) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
-  return m ? m[3] + '/' + m[2] + '/' + m[1] : (iso || '-');
-}
-/* Padrão dos seus apps: vermelho só para valor negativo; o resto na cor normal do texto */
-const moedaSinal = v => '<span' + (v < 0 ? ' class="neg"' : '') + '>' + brl(v) + '</span>';
-
-function renderFinanceiro() {
-  const apostado = FIN.filter(f => f.valor < 0).reduce((s, f) => s - f.valor, 0);
-  const ganho = FIN.filter(f => f.valor > 0).reduce((s, f) => s + f.valor, 0);
-  const saldo = ganho - apostado;
-  const retorno = apostado > 0 ? (ganho / apostado * 100) : null;
-
-  $('finResumo').innerHTML =
-    '<div class="main"><small>Saldo</small><b>' + moedaSinal(saldo) + '</b></div>' +
-    '<div><small>Total apostado</small><b>' + brl(apostado) + '</b></div>' +
-    '<div><small>Total ganho</small><b>' + brl(ganho) + '</b></div>' +
-    '<div><small>Retorno sobre o apostado</small><b>' + (retorno == null ? '—' : retorno.toFixed(1).replace('.', ',') + '%') + '</b></div>';
-
-  if (!FIN.length) { $('finLista').innerHTML = '<p class="muted">Nenhum lançamento ainda. O débito entra sozinho quando você registra uma aposta.</p>'; return; }
-
-  let acc = 0;
-  const linhas = FIN.map(f => { acc += f.valor; return Object.assign({}, f, { saldo: acc }); }).reverse();
-  $('finLista').innerHTML = '<table><thead><tr><th>Data</th><th>Tipo</th><th>Concurso</th><th>Descrição</th>' +
-    '<th class="r">Valor</th><th class="r">Saldo</th><th></th></tr></thead><tbody>' +
-    linhas.map(f => '<tr>' +
-      '<td class="num">' + esc(dataBR(f.data)) + '</td>' +
-      '<td>' + (f.tipo === 'Prêmio' ? '<span class="badge b-ok">Prêmio</span>' : '<span class="badge b-mut">Aposta</span>') + '</td>' +
-      '<td class="num">' + (f.concurso || '-') + '</td>' +
-      '<td>' + esc(f.descricao) + '</td>' +
-      '<td class="r num">' + moedaSinal(f.valor) + '</td>' +
-      '<td class="r num">' + moedaSinal(f.saldo) + '</td>' +
-      '<td class="r"><button class="btn-icon" onclick="excluirLancamento(\'' + esc(f.id) + '\')" title="Excluir lançamento" aria-label="Excluir">✕</button></td></tr>').join('') +
-    '</tbody></table>';
-}
-
-function limparFin() {
-  $('finData').value = hojeISO();
-  $('finTipo').value = 'Aposta';
-  $('finConc').value = '';
-  $('finValor').value = '';
-  $('finDesc').value = '';
-}
-
-function prepararPremio() {
-  const r = ULTIMO_RES;
-  if (!r) return;
-  irPara('financeiro');
-  $('finData').value = hojeISO();
-  $('finTipo').value = 'Prêmio';
-  $('finConc').value = r.concurso || '';
-  $('finValor').value = r.total != null ? Number(r.total).toFixed(2) : '';
-  const set = new Set(r.dezenas);
-  const melhor = Math.max.apply(null, JOGOS.map(j => j.filter(n => set.has(n)).length));
-  $('finDesc').value = 'Prêmio do concurso ' + (r.concurso || '') + ' (melhor jogo: ' + melhor + ' pontos)';
-  $('finValor').focus();
-  toast('Confira o valor recebido e clique em Lançar.');
-}
-
-async function lancar() {
-  const valor = Number($('finValor').value);
-  if (!(valor > 0)) { toast('Digite um valor maior que zero.', 'erro'); return; }
-  const conc = $('finConc').value ? Number($('finConc').value) : null;
-  if (conc !== null && (!Number.isInteger(conc) || conc < 1)) { toast('O número do concurso não é válido.', 'erro'); return; }
-  const btn = $('btnFin');
-  busy(btn, true, 'Lançando...');
-  try {
-    const j = await api('lancar', {
-      data: $('finData').value || hojeISO(),
-      tipo: $('finTipo').value,
-      concurso: conc,
-      descricao: $('finDesc').value.trim() || ($('finTipo').value + (conc ? ' do concurso ' + conc : '')),
-      valor
-    });
-    FIN = j.financeiro;
-    renderFinanceiro();
-    limparFin();
-    if (ULTIMO_RES) renderResultado(ULTIMO_RES, '', true);
-    toast('Lançado.', 'ok');
-  } catch (e) { toast(e.message, 'erro'); }
-  finally { busy(btn, false); }
-}
-
-async function excluirLancamento(id) {
-  if (!confirm('Excluir este lançamento do Financeiro?')) return;
-  try {
-    const j = await api('excluirLancamento', { id });
-    FIN = j.financeiro; renderFinanceiro();
-    toast('Lançamento excluído.', 'ok');
-  } catch (e) { toast(e.message, 'erro'); }
-}
-
-/* ================= CONFERÊNCIA MANUAL ================= */
-function montarGrid() {
-  const g = $('grid25');
-  g.innerHTML = '';
+function renderPlano(campos) {
+  if (!EDIT) return;
+  // passo 1: dezenas
+  const pk = $('planPick');
+  pk.innerHTML = '';
   for (let n = 1; n <= 25; n++) {
     const b = document.createElement('button');
     b.type = 'button';
     b.textContent = dz(n);
-    b.className = selManual.has(n) ? 'sel' : '';
-    b.setAttribute('aria-pressed', selManual.has(n));
-    b.onclick = () => {
-      if (selManual.has(n)) selManual.delete(n);
-      else if (selManual.size < 15) selManual.add(n);
-      else { toast('Já são 15 dezenas. Desmarque uma para trocar.', 'erro'); return; }
-      b.className = selManual.has(n) ? 'sel' : '';
-      b.setAttribute('aria-pressed', selManual.has(n));
-      $('manCont').textContent = selManual.size;
-    };
-    g.appendChild(b);
+    b.className = EDIT.dezenas.has(n) ? 'sel' : '';
+    b.setAttribute('aria-pressed', EDIT.dezenas.has(n));
+    b.onclick = () => { EDIT.dezenas.has(n) ? EDIT.dezenas.delete(n) : EDIT.dezenas.add(n); renderPlano(false); };
+    pk.appendChild(b);
   }
-  $('manCont').textContent = selManual.size;
+  const N = EDIT.dezenas.size;
+  $('pCount').textContent = N;
+  $('pCountInfo').textContent = N < 15 ? 'Escolha pelo menos 15. Faltam ' + (15 - N) + '.'
+    : N === 15 ? 'Com 15 dezenas só existe 1 jogo possível.'
+    : 'Com ' + N + ' dezenas existem ' + nf(comb(N, 15)) + ' jogos diferentes possíveis.';
+
+  // passo 2: valores e dias
+  if (campos) {
+    $('pUnit').value = EDIT.valorUnitario.toFixed(2);
+    $('pSemana').value = EDIT.orcamentoSemanal;
+  }
+  const rg = $('pSemanaR');
+  rg.max = Math.max(500, Math.ceil((EDIT.orcamentoSemanal || 0) / 5) * 5);
+  if (document.activeElement !== rg) rg.value = EDIT.orcamentoSemanal || 0;
+  $('pDias').innerHTML = DIAS.map(([k, l]) =>
+    '<button type="button" class="' + (EDIT.dias.has(k) ? 'on' : '') + '" aria-pressed="' + EDIT.dias.has(k) + '" onclick="togDia(\'' + k + '\')">' + l + '</button>').join('');
+
+  const c = calcPlano();
+  if (c.erro) {
+    $('pCalc').innerHTML = '<p class="calc-erro">' + esc(c.erro) + '</p>';
+  } else {
+    const nomes = diasEmOrdem(EDIT.dias).map(d => DIA_NOME[d]).join(', ');
+    $('pCalc').innerHTML =
+      '<div class="calc-grid">' +
+        '<div><small>Em cada sorteio</small><b>' + plural(c.G, 'jogo', 'jogos') + '</b><span class="det-txt">' + brl(c.custoSorteio) + ' de ' + brl(c.porSorteio) + ' disponíveis' + (c.sobra >= 0.005 ? ', sobra ' + brl(c.sobra) : '') + '</span></div>' +
+        '<div><small>Na semana</small><b>' + brl(c.custoSemana) + '</b><span class="det-txt">' + plural(c.d, 'sorteio', 'sorteios') + ': ' + nomes + '</span></div>' +
+      '</div>' +
+      (c.limite === 'combos' ? '<p class="calc-nota">Com ' + c.N + ' dezenas só existem ' + c.combos + ' jogos diferentes, então o plano usa todos e sobra dinheiro.</p>' : '') +
+      (c.limite === 'max' ? '<p class="calc-nota">O app limita a ' + MAX_JOGOS + ' jogos por sorteio.</p>' : '');
+  }
+
+  // passo 3 e resumo
+  const jogos = jogosDoPlano(c);
+  const mudou = mudouPlano();
+  $('sDez').textContent = N;
+  $('sJog').textContent = c.erro ? '—' : jogos.length;
+  $('sSem').textContent = c.erro ? '—' : brl(c.custoSemana).replace(',00', '');
+  $('pJogosTitle').textContent = jogos.length ? 'Os ' + plural(jogos.length, 'jogo', 'jogos') : 'Os jogos';
+  $('btnOutra').hidden = !!c.erro || c.combos <= c.G;
+  if (jogos.length) {
+    const uso = new Map();
+    jogos.forEach(j => j.forEach(n => uso.set(n, (uso.get(n) || 0) + 1)));
+    const us = [...uso.values()];
+    const faixa = Math.min(...us) === Math.max(...us) ? 'em ' + us[0] : 'em ' + Math.min(...us) + ' a ' + Math.max(...us);
+    $('pJogosInfo').textContent = 'Cada dezena aparece ' + faixa + ' jogos. ' +
+      (mudou ? 'Prévia: salve o plano para usar estes jogos nas próximas apostas.'
+        : PLANO.salvo ? 'Este é o plano salvo, usado nas próximas apostas.'
+        : 'Este é o plano inicial do app. Mude o que quiser e salve.');
+    $('pJogos').innerHTML = jogos.map((j, i) => '<div class="game"><header><span>Jogo ' + dz(i + 1) + '</span></header>' + volante(j) + '</div>').join('');
+    const ch = chances(jogos);
+    const ds = EDIT.dias.size || 1;
+    const sem = p => 1 - Math.pow(1 - p, ds);
+    const linhas = [['Algum prêmio', 11], ['12 ou mais', 12], ['13 ou mais', 13], ['14 ou mais', 14], ['15 pontos', 15]];
+    $('pChances').innerHTML = '<table><thead><tr><th></th><th class="r">Por sorteio</th><th class="r">Na semana</th></tr></thead><tbody>' +
+      linhas.map(([l, k]) => '<tr><td>' + l + '</td><td class="r num">' + fmtChance(ch[k]) + '</td><td class="r num">' + fmtChance(sem(ch[k])) + '</td></tr>').join('') +
+      '</tbody></table>';
+    const ret = valorEsperadoPorJogo() / (EDIT.valorUnitario || 3.5) * 100;
+    $('pRetorno').textContent = 'Estimado em 100 mil sorteios simulados. Em média, cerca de ' + Math.round(ret) + '% do que você aposta volta em prêmios, seja qual for o plano: dezenas e quantidade de jogos mudam a frequência dos prêmios, não o retorno. Para 14 e 15 pontos usei médias de R$ 1.700 e R$ 1,5 milhão.';
+  } else {
+    $('pJogosInfo').textContent = 'Ajuste o plano para ver os jogos.';
+    $('pJogos').innerHTML = '';
+    $('pChances').innerHTML = '<p class="muted">As chances aparecem quando o plano estiver completo.</p>';
+    $('pRetorno').textContent = '';
+  }
+
+  $('saveBar').hidden = !mudou;
+  $('main').classList.toggle('salvando', mudou);
+  $('btnSalvarPlano').disabled = !!c.erro;
+  $('tabPlano').classList.toggle('dirty', mudou);
 }
 
-function limparManual() {
-  selManual.clear();
-  $('manConcurso').value = '';
-  montarGrid();
-}
+function togDia(k) { EDIT.dias.has(k) ? EDIT.dias.delete(k) : EDIT.dias.add(k); renderPlano(false); }
+function limparDezenas() { EDIT.dezenas.clear(); renderPlano(false); }
+function todasDezenas() { for (let n = 1; n <= 25; n++) EDIT.dezenas.add(n); renderPlano(false); }
+function outraCombinacao() { EDIT.semente++; renderPlano(false); }
+function descartarPlano() { iniciarEdicao(); renderPlano(true); toast('Alterações descartadas.'); }
 
-async function conferirManual() {
-  if (selManual.size !== 15) { toast('Marque exatamente 15 dezenas. Faltam ' + (15 - selManual.size) + '.', 'erro'); return; }
-  const c = $('manConcurso').value ? Number($('manConcurso').value) : null;
-  if (c !== null && (!Number.isInteger(c) || c < 1)) { toast('O número do concurso não é válido.', 'erro'); return; }
-  const btn = $('btnManual');
-  busy(btn, true, 'Conferindo...');
+$('pUnit').addEventListener('input', () => { EDIT.valorUnitario = Math.round(Number($('pUnit').value) * 100) / 100; agendarPlano(); });
+$('pSemana').addEventListener('input', () => { EDIT.orcamentoSemanal = Math.round(Number($('pSemana').value) * 100) / 100; agendarPlano(); });
+$('pSemanaR').addEventListener('input', () => {
+  EDIT.orcamentoSemanal = Number($('pSemanaR').value);
+  $('pSemana').value = EDIT.orcamentoSemanal;
+  agendarPlano();
+});
+
+async function salvarPlano() {
+  const c = calcPlano();
+  if (c.erro) { toast(c.erro, 'erro'); return; }
+  const jogos = jogosDoPlano(c);
+  if (!jogos.length) { toast('Não consegui montar os jogos com essa escolha. Tente outra combinação.', 'erro'); return; }
+  const btn = $('btnSalvarPlano');
+  busy(btn, true, 'Salvando...');
   try {
-    const j = await api('manual', { concurso: c, dezenas: [...selManual].sort((a, b) => a - b) });
-    HIST = j.historico; APOSTAS = j.apostas;
-    renderHistorico(); renderApostas();
-    renderResultado(j.resultado);
+    const j = await api('salvarPlano', { plano: {
+      dezenas: ordenar([...EDIT.dezenas]),
+      valorUnitario: EDIT.valorUnitario,
+      orcamentoSemanal: EDIT.orcamentoSemanal,
+      dias: diasEmOrdem(EDIT.dias),
+      semente: EDIT.semente,
+      jogos
+    }});
+    PLANO = j.plano;
+    iniciarEdicao();
+    marca($('headMark'), PLANO.dezenas);
+    renderPlano(true);
+    renderApostasTab();
+    toast('Plano salvo. As próximas apostas usam estes ' + PLANO.jogos.length + ' jogos.', 'ok');
   } catch (e) { toast(e.message, 'erro'); }
   finally { busy(btn, false); }
 }
 
 /* ================= INÍCIO ================= */
-marca($('lockMark'));
-marca($('headMark'));
-montarGrid();
+marca($('lockMark'), MARCA_PADRAO);
 </script>
 </body>
 </html>
